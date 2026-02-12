@@ -9,6 +9,11 @@ description: Generate a submission-ready result document at contents/docs/vibe-c
 
 Create a single `vibecoding-result.mdx` document and required assets under `contents/docs/vibe-coding`, then open a PR to `okky-lab/vibe-coding-hackathon` via fork workflow.
 
+Target repository is fixed to:
+
+- `https://github.com/okky-lab/vibe-coding-hackathon`
+- No runtime option is allowed to change the upstream repository.
+
 ## Required Inputs
 
 Collect these required fields before running automation.
