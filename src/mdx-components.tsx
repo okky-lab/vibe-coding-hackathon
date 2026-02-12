@@ -4,6 +4,11 @@ import type { MDXComponents } from "mdx/types";
 
 import { CodeBlockCommand } from "@/components/docs/code-block-command";
 import { CopyButton } from "@/components/docs/copy-button";
+import {
+  Alert as ShadAlert,
+  AlertDescription as ShadAlertDescription,
+  AlertTitle as ShadAlertTitle,
+} from "@/components/ui/alert";
 import { cn } from "@/lib/cn";
 
 function getLanguageIcon(language?: string) {
@@ -69,6 +74,12 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     strong: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
       <strong className={cn("font-medium", className)} {...props} />
     ),
+    mark: ({ className, ...props }: React.ComponentProps<"mark">) => (
+      <mark
+        className={cn("rounded-sm bg-yellow-300/70 px-1 text-foreground dark:bg-yellow-500/35", className)}
+        {...props}
+      />
+    ),
     ul: ({ className, ...props }: React.ComponentProps<"ul">) => (
       <ul className={cn("my-6 ml-6 list-disc", className)} {...props} />
     ),
@@ -78,6 +89,15 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     li: ({ className, ...props }: React.ComponentProps<"li">) => <li className={cn("mt-2", className)} {...props} />,
     blockquote: ({ className, ...props }: React.ComponentProps<"blockquote">) => (
       <blockquote className={cn("mt-6 border-l-2 pl-6 italic", className)} {...props} />
+    ),
+    Alert: ({ className, ...props }: React.ComponentProps<typeof ShadAlert>) => (
+      <ShadAlert className={cn("not-prose my-6", className)} {...props} />
+    ),
+    AlertTitle: ({ className, ...props }: React.ComponentProps<typeof ShadAlertTitle>) => (
+      <ShadAlertTitle className={cn(className)} {...props} />
+    ),
+    AlertDescription: ({ className, ...props }: React.ComponentProps<typeof ShadAlertDescription>) => (
+      <ShadAlertDescription className={cn(className)} {...props} />
     ),
     hr: ({ ...props }: React.ComponentProps<"hr">) => <hr className="my-4 md:my-8" {...props} />,
     table: ({ className, ...props }: React.ComponentProps<"table">) => (
