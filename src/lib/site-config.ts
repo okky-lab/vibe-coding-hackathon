@@ -20,10 +20,12 @@ export const siteConfig: SiteConfig = {
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   eventDateKst: "2026-02-21",
   eventTimeLabel: "2026.02.21(토) 13:00 ~ 18:30",
-  eventTitle: "OKKY 제 1회 ‘코드 짜면 안되는’ 바이브코딩 해커톤",
+  eventTitle: "‘코드 짜면 안되는’ 바이브코딩 해커톤",
   eventDescription: "AI로 기획·구현·배포까지 완주하는 해커톤",
   nav: [
     { label: "홈", href: "/" },
-    { label: "문서", href: "/docs" },
+    { label: "행사개요", href: "/docs/overview" },
+    { label: "일정", href: "/docs/schedule" },
+    { label: "FAQ", href: "/faq" },
   ],
 };

@@ -13,6 +13,11 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: `${siteConfig.name} | ${siteConfig.description}`,
   description: siteConfig.description,
+  icons: {
+    icon: [{ url: "/okky-logo.png", type: "image/png" }],
+    shortcut: ["/okky-logo.png"],
+    apple: ["/okky-logo.png"],
+  },
 };
 
 export const viewport: Viewport = {

@@ -4,6 +4,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import docsMeta from "../../../../contents/docs/meta.json";
 
 import { docsSource } from "@/lib/docs-source";
 import { getMDXComponents } from "@/mdx-components";
@@ -21,6 +22,14 @@ type DocsPageData = {
   full?: boolean;
   load: () => Promise<LoadedDoc>;
 };
+
+const docsOrderMap = new Map(
+  (Array.isArray(docsMeta.pages) ? docsMeta.pages : []).map((slug, index) => [slug, index]),
+);
+
+function getDocsSlug(url: string) {
+  return url.replace(/^\/docs\//, "");
+}
 
 export function generateStaticParams() {
   return docsSource.generateParams("slug");
@@ -68,7 +77,14 @@ export default async function DocsCatchAllPage(props: {
   if (!slug || slug.length === 0) {
     const pages = docsSource
       .getPages()
-      .sort((a, b) => a.url.localeCompare(b.url, "ko"));
+      .sort((a, b) => {
+        const aOrder = docsOrderMap.get(getDocsSlug(a.url));
+        const bOrder = docsOrderMap.get(getDocsSlug(b.url));
+        if (aOrder !== undefined && bOrder !== undefined) return aOrder - bOrder;
+        if (aOrder !== undefined) return -1;
+        if (bOrder !== undefined) return 1;
+        return a.url.localeCompare(b.url, "ko");
+      });
 
     return (
       <main className="[grid-area:main] w-full px-4 pb-20 pt-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14">

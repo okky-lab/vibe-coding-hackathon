@@ -13,7 +13,7 @@ export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
-        <div className="flex items-center gap-2">
+        <span className="flex items-center gap-2" aria-label="OKKY 홈페이지 (새 탭)">
           <Image
             alt="OKKY 로고"
             className="size-6 rounded-sm object-contain"
@@ -22,8 +22,9 @@ export function baseOptions(): BaseLayoutProps {
             src="https://static.cdn.okky.kr/okky-web/public/okky.png"
             width={24}
           />
-        </div>
+        </span>
       ),
+      url: "https://okky.kr",
     },
     links,
     githubUrl: "https://github.com/okky-lab/vibe-coding-hackathon",

@@ -4,14 +4,30 @@ import { Star } from "lucide-react";
 import Link from "next/link";
 
 import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from "@/registry/default/ui/tooltip";
+import { siteConfig } from "@/lib/site-config";
 
 export default function HomePage() {
+  const eventTitleKeyword = "바이브코딩 해커톤";
+  const hasEventTitleKeyword = siteConfig.eventTitle.includes(eventTitleKeyword);
+  const eventTitlePrefix = hasEventTitleKeyword
+    ? siteConfig.eventTitle.replace(eventTitleKeyword, "").trim()
+    : siteConfig.eventTitle;
+
   return (
     <div className="mx-auto flex min-h-[calc(100svh-var(--fd-header-height,0px)-var(--fd-banner-height,0px))] w-full max-w-(--fd-layout-width) flex-1 flex-col items-center justify-center border-x px-4 text-center">
       <span className="okky-glass-text text-5xl sm:text-6xl" data-text="OKKY">
         OKKY
       </span>
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">바이브 코딩 해커톤</h1>
+      <h1 className="break-keep text-5xl tracking-tighter sm:text-6xl lg:text-7xl">
+        {hasEventTitleKeyword ? (
+          <>
+            <span className="font-bold">{eventTitlePrefix}</span>{" "}
+            <span className="font-medium">{eventTitleKeyword}</span>
+          </>
+        ) : (
+          <span className="font-medium">{siteConfig.eventTitle}</span>
+        )}
+      </h1>
       <p className="mt-4 max-w-xl text-lg text-muted-foreground">
         AI와 함께 아이디어를 빠르게 제품으로 구현하고, 데모까지 완주하는 실전형 빌드 이벤트입니다.
       </p>
