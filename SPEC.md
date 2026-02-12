@@ -75,6 +75,7 @@
 - 공정성 가이드 (`fairness-guide`)
 - 행동강령 (`code-of-conduct`)
 - 심사기준 (`judging-criteria`)
+- 오픈라우터 설정 (`openrouter-setup`)
 - FAQ (`faq`)
 
 ## 5. 수용 기준 (Acceptance Criteria)

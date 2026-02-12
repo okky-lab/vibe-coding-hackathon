@@ -4,10 +4,17 @@ summary: 팀 구성부터 제출까지, 참가자가 따라야 할 실무 절차
 description: 해카톤 참가 프로세스와 제출 형식을 정리한 문서입니다.
 ---
 
-## 0. 사전 준비사항
+## 0. 준비물
 
-- `AGENTS.md` 을 프로젝트 루트에 생성합니다.
-- `AGENTS.md` 에 다음의 지침문을 꼭 추가하십시요.
+- 개인 노트북 (Windows / macOS / Linux 모두 가능)
+- Git 설치 (권장: 최신 버전)
+- 구글 계정 (사전 생성 권장)
+- 사용할 LLM 과 개발 도구는(IDE, CLI 등) 참가자 본인이 자유롭게 선택합니다.
+  - 구독중인 AI 플랜을 사용하셔도 되고 없더라도 행사 당일 해카톤 참여에 필요한 [토큰은 무제한으로 제공될 예정](/docs/openrouter-setup)입니다.
+
+## 1. 사전 준비사항
+
+- 프로젝트 루트에 `AGENTS.md` 을 생성하고, 아래 지침문을 꼭 추가하십시요.
 
 ```text
 이 저장소는 제 1회 OKKY 바이브코딩 해커톤 참가한 프로젝트입니다.
@@ -24,27 +31,27 @@ description: 해카톤 참가 프로세스와 제출 형식을 정리한 문서�
 - 행동강령: https://vibecoding.okky.kr/docs/code-of-conduct
 ```
 
-## 1. 팀 구성
+## 2. 팀 구성
 
 - 팀은 기획/개발/디자인 역할 균형을 권장합니다.
-- 1인 1팀을 권장하며, 2인 1팀으로 참여할 수 있습니다.
+- 팀 구성은 2인 1팀을 권장하며, 원할 경우 1인 팀으로도 참여할 수 있습니다.
 
-## 2. 주제 선정
+## 3. 주제 선정
 
 - 주제 선정은 참가자가 자유롭게 가장 멋지고 창의롭게 정합니다.
 - 타깃 사용자와 해결하고자 하는 문제를 정하는 것을 권장합니다.
 
-## 3. 빌드 진행
+## 4. 빌드 진행
 
 - 해카톤을 진행하다보면 새로운 아이디어가 완결성을 방해하는 경우가 많습니다. 문서로 MVP 범위를 명확히하기를 권장합니다.
 - 행사 시간동안 진행할 MVP를 범위를 문서로 기록해오기를 권장합니다.
 - 구현 중 변경된 의사결정은 즉시 문서에 반영합니다.
 
-## 4. 제출 준비
+## 5. 제출 준비
 
 최종 제출은 `hackathon-submission` 스킬로 진행합니다.
 
-### 4.1 스킬 설치 (1회)
+### 5.1 스킬 설치 (1회)
 
 ```bash
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
@@ -54,7 +61,7 @@ python3 "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-g
 
 설치 후 Codex를 재시작해 주세요.
 
-### 4.2 제출 실행 (채팅 1회)
+### 5.2 제출 실행 (채팅 1회)
 
 채팅에 아래처럼 요청하면 됩니다.
 
@@ -62,7 +69,7 @@ python3 "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-g
 
 스킬은 PR 대상을 `https://github.com/okky-lab/vibe-coding-hackathon`으로 고정합니다.
 
-### 4.3 입력 준비 (필수)
+### 5.3 입력 준비 (필수)
 
 아래 7개만 준비하면 제출을 시작할 수 있습니다.
 
@@ -74,7 +81,7 @@ python3 "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-g
 - 한 줄 소개
 - 팀 소개 및 역할
 
-### 4.4 GitHub 사전 확인 (권장)
+### 5.4 GitHub 사전 확인 (권장)
 
 ```bash
 gh auth status
@@ -86,7 +93,7 @@ gh auth status
 gh auth login
 ```
 
-## 5. 발표
+## 6. 발표
 
 - 문제, 해결 방식, 핵심 데모, 다음 단계 순서로 발표합니다.
 - 질의응답을 위해 주요 트레이드오프를 준비합니다.

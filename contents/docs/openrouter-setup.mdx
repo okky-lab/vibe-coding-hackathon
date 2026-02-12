@@ -1,0 +1,122 @@
+---
+title: 오픈라우터 설정
+summary: OpenRouter API Key를 발급받아 Codex, Claude CLI, Cursor, Windsurf, Antigravity, OpenCode, Careti 같은 개발 도구/IDE에 연결하는 설정 가이드입니다.
+description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter 모델을 사용하기 위한 키 발급, 공통 값, 도구별 입력 항목을 안내합니다.
+---
+
+<Alert variant="destructive">
+  <AlertTitle>안내</AlertTitle>
+  <AlertDescription>
+    <ul>
+      <li>오픈라우터 키는 행사 당일 행사장에서 개별 발급합니다.</li>
+    </ul>
+  </AlertDescription>
+</Alert>
+
+## 1. 문서 범위
+
+이 문서는 API 서버 개발용 가이드가 아니라, 아래 도구에서 OpenRouter를 바로 쓰기 위한 설정 가이드입니다.
+
+- Codex
+- Claude CLI
+- Cursor
+- Windsurf
+- Antigravity
+- OpenCode
+- Careti
+
+## 2. OpenRouter API Key 발급
+
+1. [OpenRouter](https://openrouter.ai/)에 로그인합니다.
+2. 대시보드에서 API Key를 생성합니다.
+3. 생성한 키를 복사해 안전한 위치(비밀번호 관리자 등)에 보관합니다.
+
+> 주의: API Key를 Git 저장소, 채팅, 스크린샷에 노출하지 마십시오.
+
+## 3. 도구 공통 입력값
+
+도구마다 설정 UI 이름은 다르지만, 아래 3가지는 공통으로 필요합니다.
+
+- API Key: 발급받은 OpenRouter Key
+- Base URL: `https://openrouter.ai/api/v1`
+- Model ID: 예) `openai/gpt-4o-mini`, `anthropic/claude-3.5-sonnet`
+
+## 4. 도구별 설정 가이드
+
+### 4.1 Codex
+
+Codex에서 OpenAI 호환 설정을 사용하는 경우 아래 환경변수를 지정합니다.
+
+```bash
+export OPENROUTER_API_KEY="발급받은_키"
+export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"
+export OPENROUTER_MODEL="openai/gpt-4o-mini"
+
+export OPENAI_API_KEY="$OPENROUTER_API_KEY"
+export OPENAI_BASE_URL="$OPENROUTER_BASE_URL"
+export OPENAI_MODEL="$OPENROUTER_MODEL"
+```
+
+### 4.2 Claude CLI
+
+Claude CLI는 버전별로 OpenRouter 호환 설정 지원 방식이 다릅니다.
+아래 순서로 설정합니다.
+
+1. 모델/프로바이더 설정 화면에서 OpenAI-compatible 또는 Custom provider 항목을 찾습니다.
+2. API Key, Base URL, Model ID를 입력합니다.
+3. 해당 항목이 없으면 현재 버전은 OpenRouter 직접 연동을 지원하지 않을 수 있으므로 버전/플러그인을 확인합니다.
+
+### 4.3 Cursor
+
+Cursor 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+
+- API Key: OpenRouter Key
+- Base URL: `https://openrouter.ai/api/v1`
+- Model: 사용할 OpenRouter 모델 ID
+
+### 4.4 Windsurf
+
+Windsurf 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+
+- API Key: OpenRouter Key
+- Base URL: `https://openrouter.ai/api/v1`
+- Model: 사용할 OpenRouter 모델 ID
+
+### 4.5 Antigravity
+
+Antigravity 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+
+- API Key: OpenRouter Key
+- Base URL: `https://openrouter.ai/api/v1`
+- Model: 사용할 OpenRouter 모델 ID
+
+### 4.6 OpenCode
+
+OpenCode 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+
+- API Key: OpenRouter Key
+- Base URL: `https://openrouter.ai/api/v1`
+- Model: 사용할 OpenRouter 모델 ID
+
+### 4.7 Careti
+
+Careti 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+
+- API Key: OpenRouter Key
+- Base URL: `https://openrouter.ai/api/v1`
+- Model: 사용할 OpenRouter 모델 ID
+
+Careti 모델 선택 관련 상세 문서:
+<a href="https://docs.careti.ai/ko/core-features/model-selection-guide" target="_blank" rel="noopener noreferrer">Careti 모델 선택 가이드 문서 보기</a>
+
+## 5. 연결 확인 체크리스트
+
+- 도구에서 간단한 프롬프트(예: "연결 테스트")를 실행해 정상 응답을 확인합니다.
+- 401 오류가 나면 API Key 오입력 여부를 확인합니다.
+- 404/모델 오류가 나면 Model ID와 Base URL을 다시 확인합니다.
+
+## 6. 보안 및 운영 주의사항
+
+- 키는 반드시 환경변수 또는 비밀 저장소로만 관리합니다.
+- 키를 공유해야 할 경우 새 키를 재발급하고 기존 키는 즉시 폐기합니다.
+- 비용 관리를 위해 기본 모델은 경량 모델로 시작하는 것을 권장합니다.
