@@ -291,12 +291,17 @@ def ensure_gh_cli_and_auth() -> None:
     run(["gh", "auth", "status"])
 
 
-def ensure_fork(target_repo: str, login: str) -> str:
+def ensure_fork(target_repo: str, login: str, *, create_if_missing: bool = True) -> str:
     target_repo_name = target_repo.split("/")[-1]
     fork_repo = f"{login}/{target_repo_name}"
     try:
         run(["gh", "repo", "view", fork_repo])
     except CommandError:
+        if not create_if_missing:
+            raise RuntimeError(
+                f"Fork repository does not exist: {fork_repo}. "
+                f"Create it first with: gh repo fork {target_repo} --clone=false --remote=false"
+            )
         run(["gh", "repo", "fork", target_repo, "--clone=false", "--remote=false"])
     return fork_repo
 
@@ -462,10 +467,93 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--update", action="store_true")
     p.add_argument("--keep-temp", action="store_true")
     p.add_argument(
+        "--github-dry-run",
+        action="store_true",
+        help="Validate GitHub path (auth/fork/clone/render) without push, commit, or PR creation.",
+    )
+    p.add_argument(
         "--render-only-dir",
         help="Render docs into this local directory and skip all GitHub actions.",
     )
     return p
+
+
+def run_github_dry_run(
+    args: argparse.Namespace,
+    *,
+    target_repo: str,
+    team_slug: str,
+    project_slug: str,
+) -> int:
+    temp_dir = Path(tempfile.mkdtemp(prefix="hackathon-submission-gh-dry-run-"))
+    login: Optional[str] = None
+    branch_name: Optional[str] = None
+    try:
+        ensure_gh_cli_and_auth()
+        login = run(["gh", "api", "user", "--jq", ".login"])
+        run(["gh", "repo", "view", target_repo])
+        fork_repo = ensure_fork(target_repo, login, create_if_missing=False)
+
+        branch_name = create_branch_name(team_slug, project_slug)
+        repo_path = prepare_git_checkout(
+            temp_root=temp_dir,
+            target_repo=target_repo,
+            base_branch=args.base_branch,
+            fork_repo=fork_repo,
+            branch_name=branch_name,
+        )
+
+        created_doc = create_submission_artifacts(
+            repo_path,
+            team_name=args.team_name,
+            project_name=args.project_name,
+            repo_url=args.repo_url,
+            demo_url_or_run_method=args.demo_url_or_run_method,
+            problem_definition=args.problem_definition,
+            one_liner=args.one_liner,
+            team_roles=args.team_roles,
+            solution=args.solution,
+            tech_stack=args.tech_stack,
+            run_verify=args.run_verify,
+            demo_summary=args.demo_summary,
+            license_sources=args.license_sources,
+            ai_used=args.ai_used,
+            ai_validation_notes=args.ai_validation_notes,
+            presentation_url=args.presentation_url,
+            extra_links=args.extra_links,
+            update_existing=args.update,
+        )
+
+        staged_preview = run(["git", "status", "--short"], cwd=repo_path, check=False)
+        changed_count = len([line for line in staged_preview.splitlines() if line.strip()])
+        compare_url = (
+            f"https://github.com/{target_repo}/compare/"
+            f"{args.base_branch}...{login}:{branch_name}?expand=1"
+        )
+
+        print("[OK] GitHub dry-run completed.")
+        print("[OK] No commit/push/PR was created.")
+        print(f"[OK] Authenticated as: {login}")
+        print(f"[OK] Fork repository: https://github.com/{fork_repo}")
+        print(f"[OK] Planned branch: {branch_name}")
+        print(f"[OK] Rendered document path (temp clone): {created_doc}")
+        print(f"[OK] Changed files in dry-run: {changed_count}")
+        print(f"[OK] Manual compare URL preview: {compare_url}")
+        return 0
+    except Exception as error:
+        print(f"[ERROR] {error}", file=sys.stderr)
+        if login and branch_name:
+            compare_url = (
+                f"https://github.com/{target_repo}/compare/"
+                f"{args.base_branch}...{login}:{branch_name}?expand=1"
+            )
+            print(f"[FALLBACK] Compare URL preview: {compare_url}", file=sys.stderr)
+        return 1
+    finally:
+        if args.keep_temp:
+            print(f"[INFO] Temporary directory kept: {temp_dir}")
+        else:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 def main() -> int:
@@ -477,6 +565,18 @@ def main() -> int:
     except Exception as error:
         print(f"[ERROR] {error}", file=sys.stderr)
         return 1
+
+    if args.render_only_dir and args.github_dry_run:
+        print("[ERROR] --render-only-dir and --github-dry-run cannot be used together.", file=sys.stderr)
+        return 1
+
+    if args.github_dry_run:
+        return run_github_dry_run(
+            args,
+            target_repo=target_repo,
+            team_slug=team_slug,
+            project_slug=project_slug,
+        )
 
     if args.render_only_dir:
         try:
@@ -516,7 +616,7 @@ def main() -> int:
     try:
         ensure_gh_cli_and_auth()
         login = run(["gh", "api", "user", "--jq", ".login"])
-        fork_repo = ensure_fork(target_repo, login)
+        fork_repo = ensure_fork(target_repo, login, create_if_missing=True)
         branch_name = create_branch_name(team_slug, project_slug)
         repo_path = prepare_git_checkout(
             temp_root=temp_dir,
