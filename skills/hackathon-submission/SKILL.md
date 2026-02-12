@@ -103,8 +103,7 @@ Always follow these rules:
 
 1. Never push directly to `okky-lab/vibe-coding-hackathon`.
 2. Always use `fork -> fork branch -> upstream PR`.
-3. Use one dedicated submission account and verify with `gh auth status`.
+3. Let each participant use their own GitHub account and verify the active account with `gh auth status` before running.
 4. Use branch pattern:
    - `submission/<team>-<project>-<YYYYMMDDHHmmss>-<6hex>`
 5. Before PR creation, check for branch/PR duplication.
-
