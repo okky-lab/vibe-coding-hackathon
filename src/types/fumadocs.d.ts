@@ -27,6 +27,13 @@ declare module "fumadocs-mdx:collections/server" {
       bio: string;
       contact?: string;
       imageUrl?: string;
+      projectName?: string;
+      projectSummary?: string;
+      projectUrl?: string;
+      repositoryUrl?: string;
+      demoUrl?: string;
+      submittedAt?: string;
+      order?: number;
     }>
   >;
 }

@@ -26,6 +26,13 @@ const teamSchema = z.object({
   bio: z.string(),
   contact: z.string().optional(),
   imageUrl: z.string().url().optional(),
+  projectName: z.string().optional(),
+  projectSummary: z.string().optional(),
+  projectUrl: z.string().url().optional(),
+  repositoryUrl: z.string().url().optional(),
+  demoUrl: z.string().url().optional(),
+  submittedAt: z.string().optional(),
+  order: z.number().optional(),
 });
 
 export const docs = defineDocs({
