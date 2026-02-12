@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import re
 import secrets
@@ -67,11 +68,14 @@ def run(
 
 
 def slugify(text: str) -> str:
-    value = text.strip().lower()
-    value = re.sub(r"[^a-z0-9]+", "-", value)
-    value = re.sub(r"-{2,}", "-", value).strip("-")
+    source = text.strip()
+    value = source.lower()
+    value = re.sub(r"[\s_]+", "-", value, flags=re.UNICODE)
+    value = re.sub(r"[^\w-]+", "-", value, flags=re.UNICODE)
+    value = re.sub(r"-{2,}", "-", value).strip("-_")
     if not value:
-        raise ValueError("Slug value is empty after normalization.")
+        digest = hashlib.sha1(source.encode("utf-8")).hexdigest()[:8]
+        value = f"item-{digest}"
     return value
 
 
