@@ -81,6 +81,7 @@
 - 팀 카드는 프로젝트 외부 링크(`projectUrl`, `demoUrl`, `repositoryUrl`)를 버튼 형태로 제공해야 합니다.
 - 팀 카드는 `CardAction` 영역에 배지(`Badge`)를 노출하고, 하단 액션(`CardFooter`)에 단일 메인 버튼(`Button`)을 제공해야 합니다.
 - 팀 카드 하단 액션의 메인 버튼 우측에는 저장소 링크용 GitHub 아이콘 버튼을 제공해야 합니다(`repositoryUrl` 존재 시).
+- 팀 목록 그리드는 `md` 이상 뷰포트에서 3열로 표시되어야 합니다.
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)

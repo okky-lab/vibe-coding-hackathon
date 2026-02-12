@@ -47,7 +47,7 @@ export default function TeamsPage() {
           </p>
         </section>
 
-        <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           {submittedTeams.map((team) => {
             const primaryLink = getPrimaryLink(team);
 
@@ -62,7 +62,7 @@ export default function TeamsPage() {
                       width={1280}
                       height={720}
                       className="aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 384px"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 384px"
                     />
                   ) : (
                     <div className="h-full w-full bg-linear-to-br from-zinc-700 via-zinc-600 to-zinc-500 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-700" />
