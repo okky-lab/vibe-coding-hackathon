@@ -42,16 +42,48 @@ description: 해카톤 참가 프로세스와 제출 형식을 정리한 문서�
 
 ## 4. 제출 준비
 
-최종 제출 시 아래 항목을 포함해 주세요.
+최종 제출은 `hackathon-submission` 스킬로 진행합니다.
 
-- 제품 링크 또는 실행 방법
-- 문제 정의 문서
-- 데모 설명(3분 이내 권장)
-- 팀 소개 및 역할
-- 최종 제출 시 아래의 스킬을 사용하여 제출하셔야 합니다.
+### 4.1 스킬 설치 (1회)
 
 ```bash
-add-skill @okky-lab/skills/apply
+CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+python3 "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-github.py" \
+  --url https://github.com/okky-lab/vibe-coding-hackathon/tree/main/skills/hackathon-submission
+```
+
+설치 후 Codex를 재시작해 주세요.
+
+### 4.2 제출 실행 (채팅 1회)
+
+채팅에 아래처럼 요청하면 됩니다.
+
+- `hackathon-submission 스킬로 제출 문서 생성하고 PR까지 진행해 주세요.`
+
+스킬은 PR 대상을 `https://github.com/okky-lab/vibe-coding-hackathon`으로 고정합니다.
+
+### 4.3 입력 준비 (필수)
+
+아래 7개만 준비하면 제출을 시작할 수 있습니다.
+
+- 팀명
+- 프로젝트명
+- GitHub 저장소 URL (Public)
+- 데모 URL 또는 실행 방법
+- 문제 정의
+- 한 줄 소개
+- 팀 소개 및 역할
+
+### 4.4 GitHub 사전 확인 (권장)
+
+```bash
+gh auth status
+```
+
+필요하면 로그인:
+
+```bash
+gh auth login
 ```
 
 ## 5. 발표
