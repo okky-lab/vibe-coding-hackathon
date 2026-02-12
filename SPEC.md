@@ -80,6 +80,7 @@
 - 팀 카드는 이미지 영역을 포함한 카드 UI로 렌더링해야 하며, 이미지가 없을 경우 대체 배경을 표시해야 합니다.
 - 팀 카드는 프로젝트 외부 링크(`projectUrl`, `demoUrl`, `repositoryUrl`)를 버튼 형태로 제공해야 합니다.
 - 팀 카드는 `CardAction` 영역에 배지(`Badge`)를 노출하고, 하단 액션(`CardFooter`)에 단일 메인 버튼(`Button`)을 제공해야 합니다.
+- 팀 카드 하단 액션의 메인 버튼 우측에는 저장소 링크용 GitHub 아이콘 버튼을 제공해야 합니다(`repositoryUrl` 존재 시).
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)

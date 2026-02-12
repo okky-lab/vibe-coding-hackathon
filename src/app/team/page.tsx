@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GithubIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -83,18 +84,30 @@ export default function TeamsPage() {
                     <p className="text-xs">제출 시각: {formatSubmittedAt(team.submittedAt)}</p>
                   </CardDescription>
                 </CardHeader>
-                <CardFooter className="relative z-40">
+                <CardFooter className="relative z-40 flex w-full items-center gap-2">
                   {primaryLink ? (
-                    <Button className="w-full" asChild>
+                    <Button className="flex-1" asChild>
                       <Link href={primaryLink.href} target="_blank" rel="noopener noreferrer">
                         {primaryLink.label}
                       </Link>
                     </Button>
                   ) : (
-                    <Button className="w-full" disabled>
+                    <Button className="flex-1" disabled>
                       링크 준비중
                     </Button>
                   )}
+                  {team.repositoryUrl ? (
+                    <Button variant="outline" className="size-10 shrink-0 px-0" asChild>
+                      <Link
+                        href={team.repositoryUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${team.name} 저장소 링크`}
+                      >
+                        <GithubIcon className="size-4" />
+                      </Link>
+                    </Button>
+                  ) : null}
                 </CardFooter>
               </Card>
             );
