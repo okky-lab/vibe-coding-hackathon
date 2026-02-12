@@ -1,0 +1,16 @@
+type(scope): 한 줄 요약
+
+Why:
+- (왜 이 변경이 필요한가?)
+
+What:
+- (무엇이 어떻게 바뀌었나?)
+
+Verify:
+- (어떻게 검증했나? 예: pnpm lint / pnpm typecheck / pnpm test:e2e)
+
+Refs:
+- (관련 이슈/문서/링크)
+
+AI:
+- (AI 도구를 사용했다면: 무엇을 위임했고, 무엇을 직접 검증했나?)

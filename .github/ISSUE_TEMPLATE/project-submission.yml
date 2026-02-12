@@ -1,0 +1,133 @@
+name: Project Submission
+description: OKKY 바이브 코딩 해카톤 프로젝트 제출 등록
+title: "[Submission] 프로젝트명"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        아래 양식은 **공정성/재현성**을 위해 표준화되어 있습니다.
+        - 민감정보(키/토큰/개인정보/비공개 자료)를 포함하지 마세요.
+        - 프로젝트 저장소는 참가자가 확인 가능한 **공개 GitHub 저장소**여야 합니다.
+
+  - type: input
+    id: team_name
+    attributes:
+      label: 팀명
+      placeholder: 예) 팀 OKKY
+    validations:
+      required: true
+
+  - type: input
+    id: project_name
+    attributes:
+      label: 프로젝트명
+      placeholder: 예) VibeShip
+    validations:
+      required: true
+
+  - type: input
+    id: repo_url
+    attributes:
+      label: GitHub 저장소 URL (Public)
+      placeholder: https://github.com/<owner>/<repo>
+    validations:
+      required: true
+
+  - type: input
+    id: demo_url
+    attributes:
+      label: 데모 URL 또는 실행 방법 링크
+      description: 배포 URL 또는 README의 실행 섹션 링크를 입력해 주세요.
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: textarea
+    id: one_liner
+    attributes:
+      label: 한 줄 소개
+      description: 문제/대상/가치가 한 문장에 드러나게 작성해 주세요.
+      placeholder: 예) “OO 사용자의 XX 불편을 줄이기 위한 YY 자동화 도구”
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem_solution
+    attributes:
+      label: 문제 → 해결
+      value: |
+        - 문제:
+        - 해결:
+    validations:
+      required: true
+
+  - type: textarea
+    id: tech_stack
+    attributes:
+      label: 기술 스택
+      placeholder: 예) Next.js, Expo, Supabase, OpenAI API, Vercel ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: run_verify
+    attributes:
+      label: 실행/검증 방법
+      description: 로컬 실행, 테스트/빌드 방법을 간단히 적어 주세요(자세한 내용은 README 권장).
+      placeholder: |
+        - 실행: pnpm install && pnpm dev
+        - 검증: pnpm lint && pnpm typecheck && pnpm test
+    validations:
+      required: true
+
+  - type: textarea
+    id: members_roles
+    attributes:
+      label: 팀원/역할 (선택)
+      placeholder: |
+        - 홍길동: FE/BE
+        - 김철수: Design
+    validations:
+      required: false
+
+  - type: textarea
+    id: licenses
+    attributes:
+      label: 라이선스/출처 (해당 시)
+      description: 외부 코드/에셋/데이터 사용 시 출처와 라이선스를 적어 주세요.
+      placeholder: |
+        - 아이콘: lucide-react (MIT)
+        - 데이터셋: ...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: ai_used
+    attributes:
+      label: AI 도구 사용 여부
+      options:
+        - 사용함
+        - 사용하지 않음
+    validations:
+      required: true
+
+  - type: textarea
+    id: ai_notes
+    attributes:
+      label: AI 사용 내역/검증 방식 (권장)
+      description: 무엇을 위임했고 무엇을 직접 검증했는지 짧게 적어 주세요.
+      placeholder: 예) “UI 초안 생성에 사용, 최종 구현/테스트는 직접 검증”
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 제출 체크리스트
+      options:
+        - label: 프로젝트 저장소가 참가자가 확인 가능한 공개 GitHub 저장소입니다.
+          required: true
+        - label: README에 실행 방법과 검증 방법이 포함되어 있습니다.
+          required: true
+        - label: 민감정보(키/토큰/개인정보)를 저장소/이슈에 포함하지 않았습니다.
+          required: true

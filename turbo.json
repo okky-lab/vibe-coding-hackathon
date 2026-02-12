@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".env*",
+    "next.config.mjs",
+    "source.config.ts",
+    "tsconfig.json"
+  ],
+  "tasks": {
+    "build:app": {
+      "dependsOn": ["^build:app"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        ".source/**",
+        ".content-collections/**"
+      ]
+    },
+    "lint:app": {},
+    "typecheck:app": {
+      "dependsOn": ["^typecheck:app"]
+    },
+    "test:e2e:app": {
+      "cache": false
+    },
+    "dev:app": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
