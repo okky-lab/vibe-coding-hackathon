@@ -31,12 +31,12 @@ test("FAQ 미리보기와 전용 FAQ 페이지가 동작한다", async ({ page }
   expect((logoBox?.y ?? 0) + (logoBox?.height ?? 0)).toBeLessThan(faqBox?.y ?? 0);
 
   await expect(faqHeading).toBeVisible();
-  await expect(page.getByText("개발 경험이 꼭 필요한가요?")).toBeVisible();
+  await expect(page.getByText("개발 경험이 꼭 있어야 하나요?")).toBeVisible();
 
   await page.getByRole("link", { name: "전체 FAQ 보기" }).click();
   await expect(page).toHaveURL(/\/faq$/);
   await expect(page.getByRole("heading", { name: "행사 FAQ" })).toBeVisible();
-  await expect(page.getByText("혼자 참여해도 가능한가요?")).toBeVisible();
+  await expect(page.getByText("혼자 참여해도 괜찮을까요?")).toBeVisible();
 });
 
 test("운영팀 섹션과 컨택 CTA가 노출된다", async ({ page }) => {
@@ -67,7 +67,8 @@ test("문서 인덱스와 대표 문서 렌더링이 유지된다", async ({ pag
     { title: "참가방법", slug: "how-to-participate" },
     { title: "규칙", slug: "rules" },
     { title: "행동강령", slug: "code-of-conduct" },
-    { title: "심사기준", slug: "judging-criteria" },
+    { title: "심사기준 및 시상", slug: "judging-criteria" },
+    { title: "오픈라우터 설정", slug: "openrouter-setup" },
     { title: "FAQ", slug: "faq" },
   ];
 
@@ -94,9 +95,9 @@ test("없는 문서 경로는 404로 처리된다", async ({ page }) => {
 test("/docs, /faq 페이지에도 공통 헤더와 푸터가 노출된다", async ({ page }) => {
   await page.goto("/docs");
   await expect(page.getByText("OKKY 바이브 코딩 해카톤").first()).toBeVisible();
-  await expect(page.getByText("국내 최대 개발자 커뮤니티 OKKY가 진행하는 바이브 코딩 해커톤 공식 랜딩 페이지입니다.")).toBeVisible();
+  await expect(page.getByText("AI 시대를 위해 먼저 나아가는 국내 최대 개발자 커뮤니티 OKKY가 진행하는 바이브 코딩 해커톤 공식 페이지입니다.")).toBeVisible();
 
   await page.goto("/faq");
   await expect(page.getByText("OKKY 바이브 코딩 해카톤").first()).toBeVisible();
-  await expect(page.getByText("국내 최대 개발자 커뮤니티 OKKY가 진행하는 바이브 코딩 해커톤 공식 랜딩 페이지입니다.")).toBeVisible();
+  await expect(page.getByText("AI 시대를 위해 먼저 나아가는 국내 최대 개발자 커뮤니티 OKKY가 진행하는 바이브 코딩 해커톤 공식 페이지입니다.")).toBeVisible();
 });
