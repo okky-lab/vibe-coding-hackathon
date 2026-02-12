@@ -14,6 +14,7 @@
 - `team` 컬렉션 스키마에 프로젝트 제출 정보(`projectName`, `projectSummary`, `projectUrl`, `repositoryUrl`, `demoUrl`, `submittedAt`, `order`)를 포함합니다.
 - App Router 경로 `/teams`를 추가하고, `@shadcn/card` 컴포넌트 기반의 이미지 카드 목록 UI로 렌더링합니다.
 - 목록 정렬은 `order` 오름차순을 우선 적용하고, 동순위는 팀명 기준으로 정렬합니다.
+- 카드 UI는 `CardAction + Badge + Button` 패턴으로 통일해 프로젝트/팀 소개와 외부 이동 동선을 단일 액션으로 단순화합니다.
 
 ### 근거
 - MDX 파일 기반 운영은 비개발자/운영자의 수정 접근성이 높습니다.
