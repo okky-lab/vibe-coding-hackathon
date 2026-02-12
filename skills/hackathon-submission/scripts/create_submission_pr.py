@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Dict, Iterable, Optional, Sequence
 
 DEFAULT_TARGET_REPO = "okky-lab/vibe-coding-hackathon"
+DEFAULT_TARGET_REPO_URL = "https://github.com/okky-lab/vibe-coding-hackathon"
 DEFAULT_BASE_BRANCH = "main"
 DEFAULT_DOC_FILENAME = "vibecoding-result.mdx"
 ALLOWED_FRONTMATTER_KEYS = {"title", "summary", "description", "full"}
@@ -430,7 +431,10 @@ def create_or_get_pr(
 
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="Generate hackathon submission docs and open a fork-based PR."
+        description=(
+            "Generate hackathon submission docs and open a fork-based PR "
+            f"to fixed upstream {DEFAULT_TARGET_REPO_URL}."
+        )
     )
     p.add_argument("--team-name", required=True)
     p.add_argument("--project-name", required=True)
@@ -450,7 +454,6 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--presentation-url", default="")
     p.add_argument("--extra-links", default="")
 
-    p.add_argument("--target-repo", default=DEFAULT_TARGET_REPO)
     p.add_argument("--base-branch", default=DEFAULT_BASE_BRANCH)
     p.add_argument("--update", action="store_true")
     p.add_argument("--keep-temp", action="store_true")
@@ -463,6 +466,7 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = parser().parse_args()
+    target_repo = DEFAULT_TARGET_REPO
     try:
         team_slug = slugify(args.team_name)
         project_slug = slugify(args.project_name)
@@ -508,11 +512,11 @@ def main() -> int:
     try:
         ensure_gh_cli_and_auth()
         login = run(["gh", "api", "user", "--jq", ".login"])
-        fork_repo = ensure_fork(args.target_repo, login)
+        fork_repo = ensure_fork(target_repo, login)
         branch_name = create_branch_name(team_slug, project_slug)
         repo_path = prepare_git_checkout(
             temp_root=temp_dir,
-            target_repo=args.target_repo,
+            target_repo=target_repo,
             base_branch=args.base_branch,
             fork_repo=fork_repo,
             branch_name=branch_name,
@@ -549,7 +553,7 @@ def main() -> int:
         )
         pr_url = create_or_get_pr(
             repo_path=repo_path,
-            target_repo=args.target_repo,
+            target_repo=target_repo,
             base_branch=args.base_branch,
             login=login,
             branch_name=branch_name,
@@ -567,7 +571,7 @@ def main() -> int:
         print(f"[ERROR] {error}", file=sys.stderr)
         if login and branch_name:
             compare_url = (
-                f"https://github.com/{args.target_repo}/compare/"
+                f"https://github.com/{target_repo}/compare/"
                 f"{args.base_branch}...{login}:{branch_name}?expand=1"
             )
             if repo_path and repo_path.exists():
