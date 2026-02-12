@@ -69,6 +69,20 @@ python3 scripts/create_submission_pr.py \
   --render-only-dir /tmp/hackathon-submission-test
 ```
 
+For GitHub-inclusive dry-run (auth/fork/clone/render check without push/PR):
+
+```bash
+python3 scripts/create_submission_pr.py \
+  --team-name "팀 OKKY" \
+  --project-name "VibeShip" \
+  --repo-url "https://github.com/example/project" \
+  --demo-url-or-run-method "README 실행 방법 참고" \
+  --problem-definition "문제 정의" \
+  --one-liner "한 줄 소개" \
+  --team-roles "- 홍길동: FE" \
+  --github-dry-run
+```
+
 ## Output Contract
 
 The script must create:
