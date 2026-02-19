@@ -46,6 +46,8 @@
 - Codex 연결 절차는 아래 두 가지를 모두 지원하도록 문서화합니다.
   - 방법 A: `OPENROUTER_API_KEY` 환경변수와 `~/.codex/config.toml`의 `openrouter` provider 설정
   - 방법 B: `OPENAI_BASE_URL`을 `https://openrouter.ai/api/v1`로 지정하는 OpenAI provider 호환 설정
+- Codex 섹션에는 지원 형태(커스텀 provider / 기본 provider 엔드포인트 오버라이드)와 설정 위치(`~/.codex/config.toml`, `.codex/config.toml`)를 함께 명시합니다.
+- 방법 A 예시는 `model = "openai/gpt-5.2"`를 포함하고, 필요 시 `wire_api` 설정 가능성을 주석으로 안내합니다.
 
 ### 결과
 - 참가자는 자신의 운영 방식에 맞춰 Codex 연결 전략을 선택할 수 있습니다.

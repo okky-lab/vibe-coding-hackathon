@@ -45,11 +45,19 @@ description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter
 
 ### 4.1 Codex
 
-codex-cli (@openai/codex)
+#### 1) codex-cli (@openai/codex)
 
-### 지원 형태
+##### 지원 형태
 
-### 설정 위치
+* **가능**: Codex CLI는 `config.toml`에서 **커스텀 provider**를 정의해 프록시/라우터(OpenRouter 포함)로 보낼 수 있습니다.
+* 또한 `OPENAI_BASE_URL`로 **기본 OpenAI provider의 엔드포인트를 프록시로 오버라이드**할 수도 있습니다.
+
+##### 설정 위치
+
+* 유저 설정: `~/.codex/config.toml` (기본 `CODEX_HOME=~/.codex`)
+* 프로젝트 설정(선택): `.codex/config.toml` (repo 내부)
+
+##### 방법 A: 커스텀 provider로 OpenRouter 추가 (권장)
 
 1. 환경변수에 키 저장
 
@@ -60,15 +68,21 @@ export OPENROUTER_API_KEY="<your-openrouter-api-key>"
 2. `~/.codex/config.toml`에 provider 추가
 
 ```toml
+model = "openai/gpt-5.2"
 model_provider = "openrouter"
 
 [model_providers.openrouter]
 name = "OpenRouter"
 base_url = "https://openrouter.ai/api/v1"
 env_key = "OPENROUTER_API_KEY"
+
+# 필요 시 wire_api(도구/버전에 따라) 설정 가능
+# wire_api = "chat"
 ```
 
-### 방법 B: 기본 OpenAI provider를 OpenRouter로 "URL만" 교체
+* Codex가 provider를 "base URL + wire API + optional headers"로 정의한다는 구조가 핵심입니다.
+
+##### 방법 B: 기본 OpenAI provider를 OpenRouter로 "URL만" 교체
 
 ```bash
 export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
@@ -77,6 +91,7 @@ codex
 ```
 
 * `OPENAI_BASE_URL`로 기본 엔드포인트를 바꿀 수 있습니다.
+
 ### 4.2 Claude CLI
 
 Claude CLI는 버전별로 OpenRouter 호환 설정 지원 방식이 다릅니다.

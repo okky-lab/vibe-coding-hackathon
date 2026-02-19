@@ -85,9 +85,16 @@
 
 ### FR-010 오픈라우터 설정 문서 요구사항
 - `오픈라우터 설정` 문서(`openrouter-setup`)는 Codex 설정 섹션을 포함해야 합니다.
+- Codex 설정 섹션은 아래 지원 형태를 명시해야 합니다.
+  - `config.toml` 기반 커스텀 provider 정의 가능
+  - `OPENAI_BASE_URL` 기반 기본 OpenAI provider 엔드포인트 오버라이드 가능
+- Codex 설정 섹션은 아래 설정 위치를 명시해야 합니다.
+  - 유저 설정: `~/.codex/config.toml`
+  - 프로젝트 설정(선택): `.codex/config.toml`
 - Codex 설정 섹션은 아래 두 가지 연결 방식을 모두 안내해야 합니다.
-  - 방법 A: `OPENROUTER_API_KEY` 환경변수 + `~/.codex/config.toml`의 `model_provider = "openrouter"` 설정
+  - 방법 A(권장): `OPENROUTER_API_KEY` 환경변수 + `~/.codex/config.toml`의 `model_provider = "openrouter"` 설정
   - 방법 B: `OPENAI_BASE_URL`을 `https://openrouter.ai/api/v1`로 지정하는 OpenAI provider 호환 설정
+- 방법 A 예시는 `model = "openai/gpt-5.2"`와 `model_provider = "openrouter"`를 포함해야 하며, 필요 시 `wire_api` 설정 가능성을 안내해야 합니다.
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
@@ -109,4 +116,5 @@
 - AC-006: 일정 문서에는 `2026년 02월 21일(토요일)`, `13:00~18:00` 기준이 명시된 타임테이블 표가 존재해야 합니다.
 - AC-007: 사용자가 `/team`에 접속하면 `contents/team` 데이터 기반의 이미지 카드 목록을 확인할 수 있어야 합니다.
 - AC-008: 사용자가 `/teams`에 접속하면 `/team`으로 이동되어 동일한 목록 화면을 확인할 수 있어야 합니다.
-- AC-009: `/docs/openrouter-setup` 문서의 Codex 섹션에는 방법 A/B 설정 절차와 `https://openrouter.ai/api/v1` 엔드포인트가 명시되어야 합니다.
+- AC-009: `/docs/openrouter-setup` 문서의 Codex 섹션에는 지원 형태(커스텀 provider/엔드포인트 오버라이드)와 설정 위치(`~/.codex/config.toml`, `.codex/config.toml`)가 명시되어야 합니다.
+- AC-010: `/docs/openrouter-setup` 문서의 Codex 섹션에는 방법 A/B 설정 절차, `model = "openai/gpt-5.2"` 예시, `https://openrouter.ai/api/v1` 엔드포인트가 명시되어야 합니다.
