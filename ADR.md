@@ -52,3 +52,24 @@
 ### 결과
 - 참가자는 자신의 운영 방식에 맞춰 Codex 연결 전략을 선택할 수 있습니다.
 - 운영진/참가자 모두가 동일한 설정 근거를 문서에서 확인할 수 있어 공정성과 추적 가능성이 강화됩니다.
+
+## ADR-003 오픈라우터 설정 문서의 Claude Code 연결 방식 구체화
+
+- 상태: 승인
+- 날짜: 2026-02-19
+
+### 배경
+- 기존 Claude 섹션은 개략 설명 중심이라 실제 연결 시 필요한 환경변수/파일 위치/검증 절차의 재현성이 낮았습니다.
+- 같은 문서 내 Codex 섹션은 상세 포맷(지원 형태/설정 위치/방법 A/B)을 갖추고 있어, 도구 간 가이드 품질을 맞출 필요가 있었습니다.
+
+### 결정
+- `contents/docs/openrouter-setup.mdx`의 Claude 섹션을 Codex와 동일한 포맷으로 재작성합니다.
+- OpenRouter 연결 필수 환경변수 4개(`OPENROUTER_API_KEY`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_API_KEY=""`)를 명시합니다.
+- 설정 방식은 아래 두 가지를 모두 제공하도록 문서화합니다.
+  - 방법 A: 셸 프로필 기반 영구 적용(zsh/bash/fish)
+  - 방법 B: Claude Code `settings.json`의 `env` 필드 기반 파일 설정
+- Windows PowerShell 설정, `claude` 실행 절차, `/status` 기반 검증, 자주 발생하는 오류 해결 절차를 함께 포함합니다.
+
+### 결과
+- Claude Code 사용자는 OS/설정 선호도에 따라 동일한 기준으로 OpenRouter 연결을 재현할 수 있습니다.
+- 문서 내 Codex/Claude 섹션의 구조와 문장 톤이 통일되어 학습 비용이 낮아집니다.

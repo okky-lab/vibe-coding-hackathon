@@ -96,6 +96,21 @@
   - 방법 B: `OPENAI_BASE_URL`을 `https://openrouter.ai/api/v1`로 지정하는 OpenAI provider 호환 설정
 - 방법 A 예시는 `model = "openai/gpt-5.2"`와 `model_provider = "openrouter"`를 포함해야 하며, 필요 시 `wire_api` 설정 가능성을 안내해야 합니다.
 
+### FR-011 오픈라우터 설정 문서의 Claude Code 요구사항
+- `오픈라우터 설정` 문서(`openrouter-setup`)는 Claude Code 설정 섹션을 포함해야 합니다.
+- Claude Code 섹션은 아래 지원 형태를 명시해야 합니다.
+  - 환경변수 기반 연결
+  - `settings.json`의 `env` 필드를 사용하는 파일 기반 연결
+- Claude Code 섹션은 OpenRouter 연결 필수 환경변수 4개를 명시해야 합니다.
+  - `OPENROUTER_API_KEY`
+  - `ANTHROPIC_BASE_URL=https://openrouter.ai/api`
+  - `ANTHROPIC_AUTH_TOKEN`
+  - `ANTHROPIC_API_KEY=""` (명시적 빈 문자열)
+- Claude Code 섹션은 아래 두 가지 설정 방법을 모두 안내해야 합니다.
+  - 방법 A: 셸 프로필 영구 적용(zsh/bash/fish)
+  - 방법 B: `~/.claude/settings.json` 또는 `.claude/settings.local.json`의 `env` 구성
+- Claude Code 섹션은 Windows PowerShell 설정(세션/영구)과 실행/검증/트러블슈팅 절차를 포함해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -118,3 +133,5 @@
 - AC-008: 사용자가 `/teams`에 접속하면 `/team`으로 이동되어 동일한 목록 화면을 확인할 수 있어야 합니다.
 - AC-009: `/docs/openrouter-setup` 문서의 Codex 섹션에는 지원 형태(커스텀 provider/엔드포인트 오버라이드)와 설정 위치(`~/.codex/config.toml`, `.codex/config.toml`)가 명시되어야 합니다.
 - AC-010: `/docs/openrouter-setup` 문서의 Codex 섹션에는 방법 A/B 설정 절차, `model = "openai/gpt-5.2"` 예시, `https://openrouter.ai/api/v1` 엔드포인트가 명시되어야 합니다.
+- AC-011: `/docs/openrouter-setup` 문서의 Claude Code 섹션에는 4개 필수 환경변수(`OPENROUTER_API_KEY`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_API_KEY=""`)와 `https://openrouter.ai/api` 엔드포인트가 명시되어야 합니다.
+- AC-012: `/docs/openrouter-setup` 문서의 Claude Code 섹션에는 셸 프로필 방식, `settings.json` 방식, Windows PowerShell 방식, `/status` 기반 검증 절차가 포함되어야 합니다.
