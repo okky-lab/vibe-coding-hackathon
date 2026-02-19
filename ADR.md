@@ -31,3 +31,22 @@
 ### 추후 고려사항
 - 팀 상세 페이지(`/teams/[slug]`)를 추가해 MDX 본문을 직접 렌더링할 수 있습니다.
 - 운영 편의를 위해 제출 링크 유효성 검증(빌드 시 체크)을 추가할 수 있습니다.
+
+## ADR-002 오픈라우터 설정 문서의 Codex 연결 방식 명시
+
+- 상태: 승인
+- 날짜: 2026-02-19
+
+### 배경
+- 참가자들이 Codex에서 OpenRouter를 연결하는 방식(전용 provider 설정 vs OpenAI provider 호환 설정)을 혼동할 수 있습니다.
+- 설정 경로와 환경변수 조합이 문서에 명확히 고정되어야 제출물 검증 시 재현성이 높아집니다.
+
+### 결정
+- `contents/docs/openrouter-setup.mdx` 문서의 Codex 섹션을 `codex-cli (@openai/codex)` 기준 안내로 교체합니다.
+- Codex 연결 절차는 아래 두 가지를 모두 지원하도록 문서화합니다.
+  - 방법 A: `OPENROUTER_API_KEY` 환경변수와 `~/.codex/config.toml`의 `openrouter` provider 설정
+  - 방법 B: `OPENAI_BASE_URL`을 `https://openrouter.ai/api/v1`로 지정하는 OpenAI provider 호환 설정
+
+### 결과
+- 참가자는 자신의 운영 방식에 맞춰 Codex 연결 전략을 선택할 수 있습니다.
+- 운영진/참가자 모두가 동일한 설정 근거를 문서에서 확인할 수 있어 공정성과 추적 가능성이 강화됩니다.

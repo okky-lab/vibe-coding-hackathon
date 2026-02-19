@@ -45,18 +45,38 @@ description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter
 
 ### 4.1 Codex
 
-Codex에서 OpenAI 호환 설정을 사용하는 경우 아래 환경변수를 지정합니다.
+codex-cli (@openai/codex)
+
+### 지원 형태
+
+### 설정 위치
+
+1. 환경변수에 키 저장
 
 ```bash
-export OPENROUTER_API_KEY="발급받은_키"
-export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"
-export OPENROUTER_MODEL="openai/gpt-4o-mini"
-
-export OPENAI_API_KEY="$OPENROUTER_API_KEY"
-export OPENAI_BASE_URL="$OPENROUTER_BASE_URL"
-export OPENAI_MODEL="$OPENROUTER_MODEL"
+export OPENROUTER_API_KEY="<your-openrouter-api-key>"
 ```
 
+2. `~/.codex/config.toml`에 provider 추가
+
+```toml
+model_provider = "openrouter"
+
+[model_providers.openrouter]
+name = "OpenRouter"
+base_url = "https://openrouter.ai/api/v1"
+env_key = "OPENROUTER_API_KEY"
+```
+
+### 방법 B: 기본 OpenAI provider를 OpenRouter로 "URL만" 교체
+
+```bash
+export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+export OPENAI_API_KEY="<your-openrouter-api-key>"
+codex
+```
+
+* `OPENAI_BASE_URL`로 기본 엔드포인트를 바꿀 수 있습니다.
 ### 4.2 Claude CLI
 
 Claude CLI는 버전별로 OpenRouter 호환 설정 지원 방식이 다릅니다.
