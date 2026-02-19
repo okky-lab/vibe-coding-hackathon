@@ -132,6 +132,13 @@
   - 모델 추가 예시(`provider.openrouter.models.<model-id>`)
   - 모델별 provider 라우팅 옵션 예시(`order`, `allow_fallbacks`)
 
+### FR-014 오픈라우터 설정 문서의 직접 연결 미지원 도구 고지
+- `오픈라우터 설정` 문서(`openrouter-setup`)는 아래 도구의 직접 OpenRouter API Key 연결 미지원 상태를 명시해야 합니다.
+  - Gemini CLI
+  - Windsurf
+  - Antigravity
+- 각 섹션은 "현재 OpenRouter API Key 직접 연결 미지원" 문구를 포함해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -160,3 +167,4 @@
 - AC-014: `/docs/openrouter-setup` 문서의 Cursor 섹션에는 `API Keys` 단계별 설정(OpenAI API Key 활성화, OpenRouter 키, `Override OpenAI Base URL`, `https://openrouter.ai/api/v1`)과 모델 추가 안내가 포함되어야 합니다.
 - AC-015: `/docs/openrouter-setup` 문서의 OpenCode 섹션에는 `/connect` 기반 OpenRouter 연결, API Key 입력, `/models` 실행 단계가 명시되어야 합니다.
 - AC-016: `/docs/openrouter-setup` 문서의 OpenCode 섹션에는 `opencode.json` 모델 추가 예시와 provider 옵션(`order`, `allow_fallbacks`) 예시가 포함되어야 합니다.
+- AC-017: `/docs/openrouter-setup` 문서에는 Gemini CLI, Windsurf, Antigravity의 OpenRouter API Key 직접 연결 미지원 상태가 명시되어야 합니다.

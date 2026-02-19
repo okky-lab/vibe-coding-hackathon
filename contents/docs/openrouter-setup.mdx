@@ -1,6 +1,6 @@
 ---
 title: 오픈라우터 설정
-summary: OpenRouter API Key를 발급받아 Codex, Claude CLI, Cursor, Windsurf, Antigravity, OpenCode, Careti 같은 개발 도구/IDE에 연결하는 설정 가이드입니다.
+summary: OpenRouter API Key를 발급받아 Codex, Claude CLI, Cursor, OpenCode, Careti 같은 개발 도구/IDE에 연결하는 설정 가이드입니다.
 description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter 모델을 사용하기 위한 키 발급, 공통 값, 도구별 입력 항목을 안내합니다.
 ---
 
@@ -20,6 +20,7 @@ description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter
 - Codex
 - Claude CLI
 - Cursor
+- Gemini CLI
 - Windsurf
 - Antigravity
 - OpenCode
@@ -259,23 +260,28 @@ Cursor에서 아래 순서로 진행합니다.
 3. 모델 추가에서 OpenRouter 모델을 선택해 사용합니다.
    - 예시: [OpenRouter Cursor 안내](https://openrouter.ai/announcements/use-openrouter-models-in-cursor-try-it-with-moonshot-ais-kimi-k2)
 
-### 4.4 Windsurf
+### 4.4 Gemini CLI
 
-Windsurf 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+##### 지원 형태
 
-- API Key: OpenRouter Key
-- Base URL: `https://openrouter.ai/api/v1`
-- Model: 사용할 OpenRouter 모델 ID
+* **현재 불가**: Gemini CLI는 OpenRouter API Key 직접 연결을 지원하지 않습니다.
+* OpenRouter API Key를 직접 입력하는 방식은 현재 미지원 상태입니다.
 
-### 4.5 Antigravity
+### 4.5 Windsurf
 
-Antigravity 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+##### 지원 형태
 
-- API Key: OpenRouter Key
-- Base URL: `https://openrouter.ai/api/v1`
-- Model: 사용할 OpenRouter 모델 ID
+* **현재 불가**: Windsurf는 OpenRouter API Key 직접 연결을 지원하지 않습니다.
+* OpenRouter API Key를 직접 입력하는 방식은 현재 미지원 상태입니다.
 
-### 4.6 OpenCode
+### 4.6 Antigravity
+
+##### 지원 형태
+
+* **현재 불가**: Antigravity는 OpenRouter API Key 직접 연결을 지원하지 않습니다.
+* OpenRouter API Key를 직접 입력하는 방식은 현재 미지원 상태입니다.
+
+### 4.7 OpenCode
 
 ##### 지원 형태
 
@@ -347,7 +353,7 @@ Antigravity 설정의 모델/프로바이더 영역에서 아래를 입력합니
 }
 ```
 
-### 4.7 Careti
+### 4.8 Careti
 
 Careti 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
 
