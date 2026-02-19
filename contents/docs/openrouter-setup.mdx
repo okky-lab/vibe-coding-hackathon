@@ -277,11 +277,75 @@ Antigravity 설정의 모델/프로바이더 영역에서 아래를 입력합니
 
 ### 4.6 OpenCode
 
-OpenCode 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
+##### 지원 형태
 
-- API Key: OpenRouter Key
-- Base URL: `https://openrouter.ai/api/v1`
-- Model: 사용할 OpenRouter 모델 ID
+* **가능**: OpenCode는 `/connect` 명령으로 OpenRouter provider를 연결할 수 있습니다.
+* 또한 `/models`로 기본 모델을 선택하고, `opencode.json`으로 모델 목록/라우팅 옵션을 확장할 수 있습니다.
+
+##### 설정 방법(OpenCode 안내)
+
+1. OpenCode에서 `/connect`를 실행합니다.
+
+```bash
+/connect
+```
+
+2. provider 목록에서 OpenRouter를 검색해 선택합니다.
+3. API Key 입력 화면에서 OpenRouter 키를 입력합니다.
+
+```text
+┌ API key
+│
+│
+└ enter
+```
+
+4. 연결 후 `/models`를 실행해 원하는 모델을 선택합니다.
+
+```bash
+/models
+```
+
+##### `opencode.json`으로 모델 추가
+
+필요한 모델이 기본 목록에 없으면 `opencode.json`으로 추가할 수 있습니다.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openrouter": {
+      "models": {
+        "somecoolnewmodel": {}
+      }
+    }
+  }
+}
+```
+
+##### `opencode.json`으로 provider 라우팅 옵션 지정
+
+모델별 provider 우선순위(order)와 fallback 허용 여부도 설정할 수 있습니다.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openrouter": {
+      "models": {
+        "moonshotai/kimi-k2": {
+          "options": {
+            "provider": {
+              "order": ["baseten"],
+              "allow_fallbacks": false
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ### 4.7 Careti
 

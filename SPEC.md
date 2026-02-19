@@ -120,6 +120,18 @@
   - `API Keys` 섹션 설정: OpenAI API Key 활성화, OpenRouter 키 입력, `Override OpenAI Base URL` 활성화, Base URL `https://openrouter.ai/api/v1` 지정
   - 모델 추가 단계에서 OpenRouter 모델 선택 안내
 
+### FR-013 오픈라우터 설정 문서의 OpenCode 요구사항
+- `오픈라우터 설정` 문서(`openrouter-setup`)는 OpenCode 설정 섹션을 포함해야 합니다.
+- OpenCode 섹션은 아래 지원 형태를 명시해야 합니다.
+  - `/connect` 명령 기반 OpenRouter provider 연결 가능
+  - `/models` 명령 기반 모델 선택 및 `opencode.json` 기반 모델/옵션 확장 가능
+- OpenCode 섹션은 아래 설정 절차를 포함해야 합니다.
+  - `/connect` 실행 후 OpenRouter 선택 및 API Key 입력
+  - `/models` 실행을 통한 모델 선택
+- OpenCode 섹션은 `opencode.json` 기반 예시를 포함해야 합니다.
+  - 모델 추가 예시(`provider.openrouter.models.<model-id>`)
+  - 모델별 provider 라우팅 옵션 예시(`order`, `allow_fallbacks`)
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -146,3 +158,5 @@
 - AC-012: `/docs/openrouter-setup` 문서의 Claude Code 섹션에는 셸 프로필 방식, `settings.json` 방식, Windows PowerShell 방식, `/status` 기반 검증 절차가 포함되어야 합니다.
 - AC-013: `/docs/openrouter-setup` 문서의 Cursor 섹션에는 지원 형태(OpenAI API Key + Base URL override)와 설정 경로(`Settings -> Cursor Settings -> Models`)가 명시되어야 합니다.
 - AC-014: `/docs/openrouter-setup` 문서의 Cursor 섹션에는 `API Keys` 단계별 설정(OpenAI API Key 활성화, OpenRouter 키, `Override OpenAI Base URL`, `https://openrouter.ai/api/v1`)과 모델 추가 안내가 포함되어야 합니다.
+- AC-015: `/docs/openrouter-setup` 문서의 OpenCode 섹션에는 `/connect` 기반 OpenRouter 연결, API Key 입력, `/models` 실행 단계가 명시되어야 합니다.
+- AC-016: `/docs/openrouter-setup` 문서의 OpenCode 섹션에는 `opencode.json` 모델 추가 예시와 provider 옵션(`order`, `allow_fallbacks`) 예시가 포함되어야 합니다.

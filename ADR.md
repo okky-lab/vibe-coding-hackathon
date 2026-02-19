@@ -95,3 +95,23 @@
 ### 결과
 - Cursor 사용자는 UI 클릭 경로와 입력 항목을 기준으로 OpenRouter 연결을 빠르게 재현할 수 있습니다.
 - 도구별 섹션 품질이 일관되어 문서 학습/검증 비용이 낮아집니다.
+
+## ADR-005 오픈라우터 설정 문서의 OpenCode 연결 방식 구체화
+
+- 상태: 승인
+- 날짜: 2026-02-19
+
+### 배경
+- 기존 OpenCode 섹션은 API Key/Base URL/Model 항목만 제시해 실제 CLI 연결 순서를 따라가기가 어려웠습니다.
+- Codex/Claude/Cursor 섹션이 절차형 포맷으로 정리되어 있어, OpenCode도 동일한 수준의 구체성과 톤이 필요했습니다.
+
+### 결정
+- `contents/docs/openrouter-setup.mdx`의 OpenCode 섹션을 절차형 가이드로 재작성합니다.
+- OpenCode 연결 핵심 흐름(`/connect` -> OpenRouter 선택 -> API Key 입력 -> `/models` 선택)을 명시합니다.
+- `opencode.json` 예시를 아래 2가지로 포함합니다.
+  - 모델 추가 예시(`provider.openrouter.models.<model-id>`)
+  - 모델별 provider 라우팅 옵션 예시(`order`, `allow_fallbacks`)
+
+### 결과
+- OpenCode 사용자는 명령 중심 절차와 설정 파일 예시를 기준으로 OpenRouter 연결을 빠르게 재현할 수 있습니다.
+- 오픈라우터 설정 문서의 도구별 섹션이 동일한 형식으로 정렬되어 사용성과 검증성이 개선됩니다.
