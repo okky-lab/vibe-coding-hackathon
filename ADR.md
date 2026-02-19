@@ -145,7 +145,7 @@
 - 공통 입력값의 모델 예시가 고정 문자열로 제시되어 최신 모델 확인 경로를 놓칠 수 있었습니다.
 
 ### 결정
-- `contents/docs/openrouter-setup.mdx`의 문서 범위 섹션에서 도구 목록을 `사용 가능`과 `사용 불가능(OpenRouter API Key 직접 연결 기준)`으로 분리합니다.
+- `contents/docs/openrouter-setup.mdx`의 문서 범위 섹션에서 도구 목록을 `사용 가능`과 `사용 불가능(지금은 OpenRouter에 바로 연결할 수 없는 도구)`으로 분리합니다.
 - 사용 불가능 그룹은 `Gemini CLI`, `Windsurf`, `Antigravity`로 고정하고, 나머지는 사용 가능 그룹으로 명시합니다.
 - 중복되는 `OpenRouter API Key 발급` 섹션을 제거합니다.
 - 도구 공통 입력값의 Model ID 안내는 OpenRouter 모델 목록 페이지(`https://openrouter.ai/models?order=newest`) 참조 방식으로 변경합니다.

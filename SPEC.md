@@ -140,7 +140,7 @@
 - 각 섹션은 "현재 OpenRouter API Key 직접 연결 미지원" 문구를 포함해야 합니다.
 
 ### FR-015 오픈라우터 설정 문서 구조 정리
-- `오픈라우터 설정` 문서(`openrouter-setup`)의 문서 범위 섹션은 "사용 가능"과 "사용 불가능(OpenRouter API Key 직접 연결 기준)" 구간으로 도구 목록을 분리해야 합니다.
+- `오픈라우터 설정` 문서(`openrouter-setup`)의 문서 범위 섹션은 "사용 가능"과 "사용 불가능(지금은 OpenRouter에 바로 연결할 수 없는 도구)" 구간으로 도구 목록을 분리해야 합니다.
 - 사용 가능 목록은 `Codex`, `Claude CLI`, `Cursor`, `OpenCode`, `Careti`를 포함해야 합니다.
 - 사용 불가능 목록은 `Gemini CLI`, `Windsurf`, `Antigravity`를 포함해야 합니다.
 - 문서 본문에서 `OpenRouter API Key 발급` 절은 제거되어야 합니다.
@@ -175,5 +175,5 @@
 - AC-015: `/docs/openrouter-setup` 문서의 OpenCode 섹션에는 `/connect` 기반 OpenRouter 연결, API Key 입력, `/models` 실행 단계가 명시되어야 합니다.
 - AC-016: `/docs/openrouter-setup` 문서의 OpenCode 섹션에는 `opencode.json` 모델 추가 예시와 provider 옵션(`order`, `allow_fallbacks`) 예시가 포함되어야 합니다.
 - AC-017: `/docs/openrouter-setup` 문서에는 Gemini CLI, Windsurf, Antigravity의 OpenRouter API Key 직접 연결 미지원 상태가 명시되어야 합니다.
-- AC-018: `/docs/openrouter-setup` 문서의 1번 섹션은 도구를 "사용 가능"과 "사용 불가능(OpenRouter API Key 직접 연결 기준)"으로 분리해 표시해야 합니다.
+- AC-018: `/docs/openrouter-setup` 문서의 1번 섹션은 도구를 "사용 가능"과 "사용 불가능(지금은 OpenRouter에 바로 연결할 수 없는 도구)"으로 분리해 표시해야 합니다.
 - AC-019: `/docs/openrouter-setup` 문서에는 `OpenRouter API Key 발급` 섹션이 없어야 하며, 공통 입력값의 Model ID는 `https://openrouter.ai/models?order=newest` 참조 안내로 표기되어야 합니다.
