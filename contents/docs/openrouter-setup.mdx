@@ -1,7 +1,7 @@
 ---
 title: 오픈라우터 설정
 summary: OpenRouter API Key를 발급받아 Codex, Claude CLI, Cursor, OpenCode, Careti 같은 개발 도구/IDE에 연결하는 설정 가이드입니다.
-description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter 모델을 사용하기 위한 키 발급, 공통 값, 도구별 입력 항목을 안내합니다.
+description: 개발 도구에서 OpenRouter 모델을 사용하기 위한 공통 입력값과 도구별 설정 방법, 지원 여부를 안내합니다.
 ---
 
 <Alert variant="destructive">
@@ -15,36 +15,33 @@ description: 서비스 코드 연동이 아니라 개발 도구에서 OpenRouter
 
 ## 1. 문서 범위
 
-이 문서는 API 서버 개발용 가이드가 아니라, 아래 도구에서 OpenRouter를 바로 쓰기 위한 설정 가이드입니다.
+이 문서는 아래 도구에서 OpenRouter를 바로 쓰기 위한 설정 가이드입니다.
+
+### 사용 가능
 
 - Codex
 - Claude CLI
 - Cursor
-- Gemini CLI
-- Windsurf
-- Antigravity
 - OpenCode
 - Careti
 
-## 2. OpenRouter API Key 발급
+### 사용 불가능 (OpenRouter API Key 직접 연결 기준)
 
-1. [OpenRouter](https://openrouter.ai/)에 로그인합니다.
-2. 대시보드에서 API Key를 생성합니다.
-3. 생성한 키를 복사해 안전한 위치(비밀번호 관리자 등)에 보관합니다.
+- Gemini CLI
+- Windsurf
+- Antigravity
 
-> 주의: API Key를 Git 저장소, 채팅, 스크린샷에 노출하지 마십시오.
-
-## 3. 도구 공통 입력값
+## 2. 도구 공통 입력값
 
 도구마다 설정 UI 이름은 다르지만, 아래 3가지는 공통으로 필요합니다.
 
 - API Key: 발급받은 OpenRouter Key
 - Base URL: 기본 `https://openrouter.ai/api/v1` (Claude Code는 `https://openrouter.ai/api`)
-- Model ID: 예) `openai/gpt-4o-mini`, `anthropic/claude-3.5-sonnet`
+- Model ID: 사용 가능한 모델 목록은 [OpenRouter Models](https://openrouter.ai/models?order=newest)에서 확인
 
-## 4. 도구별 설정 가이드
+## 3. 도구별 설정 가이드
 
-### 4.1 Codex
+### 3.1 Codex
 
 #### 1) codex-cli (@openai/codex)
 
@@ -93,7 +90,7 @@ codex
 
 * `OPENAI_BASE_URL`로 기본 엔드포인트를 바꿀 수 있습니다.
 
-### 4.2 Claude Code
+### 3.2 Claude Code
 
 ##### 지원 형태
 
@@ -241,7 +238,7 @@ Claude Code 내에서 아래 명령으로 연결 상태를 확인합니다.
 3. Claude.ai 구독이 있어도 API 과금이 발생하는 경우
    - Claude Code는 환경변수 API 키가 있으면 구독 로그인보다 우선하므로 OpenRouter 연결 목적에서는 정상 동작입니다.
 
-### 4.3 Cursor
+### 3.3 Cursor
 
 ##### 지원 형태
 
@@ -260,28 +257,28 @@ Cursor에서 아래 순서로 진행합니다.
 3. 모델 추가에서 OpenRouter 모델을 선택해 사용합니다.
    - 예시: [OpenRouter Cursor 안내](https://openrouter.ai/announcements/use-openrouter-models-in-cursor-try-it-with-moonshot-ais-kimi-k2)
 
-### 4.4 Gemini CLI
+### 3.4 Gemini CLI
 
 ##### 지원 형태
 
 * **현재 불가**: Gemini CLI는 OpenRouter API Key 직접 연결을 지원하지 않습니다.
 * OpenRouter API Key를 직접 입력하는 방식은 현재 미지원 상태입니다.
 
-### 4.5 Windsurf
+### 3.5 Windsurf
 
 ##### 지원 형태
 
 * **현재 불가**: Windsurf는 OpenRouter API Key 직접 연결을 지원하지 않습니다.
 * OpenRouter API Key를 직접 입력하는 방식은 현재 미지원 상태입니다.
 
-### 4.6 Antigravity
+### 3.6 Antigravity
 
 ##### 지원 형태
 
 * **현재 불가**: Antigravity는 OpenRouter API Key 직접 연결을 지원하지 않습니다.
 * OpenRouter API Key를 직접 입력하는 방식은 현재 미지원 상태입니다.
 
-### 4.7 OpenCode
+### 3.7 OpenCode
 
 ##### 지원 형태
 
@@ -353,7 +350,7 @@ Cursor에서 아래 순서로 진행합니다.
 }
 ```
 
-### 4.8 Careti
+### 3.8 Careti
 
 Careti 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
 
@@ -364,13 +361,13 @@ Careti 설정의 모델/프로바이더 영역에서 아래를 입력합니다.
 Careti 모델 선택 관련 상세 문서:
 <a href="https://docs.careti.ai/ko/core-features/model-selection-guide" target="_blank" rel="noopener noreferrer">Careti 모델 선택 가이드 문서 보기</a>
 
-## 5. 연결 확인 체크리스트
+## 4. 연결 확인 체크리스트
 
 - 도구에서 간단한 프롬프트(예: "연결 테스트")를 실행해 정상 응답을 확인합니다.
 - 401 오류가 나면 API Key 오입력 여부를 확인합니다.
 - 404/모델 오류가 나면 Model ID와 Base URL을 다시 확인합니다.
 
-## 6. 보안 및 운영 주의사항
+## 5. 보안 및 운영 주의사항
 
 - 키는 반드시 환경변수 또는 비밀 저장소로만 관리합니다.
 - 키를 공유해야 할 경우 새 키를 재발급하고 기존 키는 즉시 폐기합니다.
