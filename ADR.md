@@ -73,3 +73,25 @@
 ### 결과
 - Claude Code 사용자는 OS/설정 선호도에 따라 동일한 기준으로 OpenRouter 연결을 재현할 수 있습니다.
 - 문서 내 Codex/Claude 섹션의 구조와 문장 톤이 통일되어 학습 비용이 낮아집니다.
+
+## ADR-004 오픈라우터 설정 문서의 Cursor 연결 절차 구체화
+
+- 상태: 승인
+- 날짜: 2026-02-19
+
+### 배경
+- 기존 Cursor 섹션은 API Key/Base URL/Model 나열 수준으로, 실제 UI 경로와 단계가 부족해 따라 하기 어려운 상태였습니다.
+- Codex/Claude 섹션이 이미 절차 중심으로 정리되어 있어, Cursor도 같은 수준의 구체성이 필요했습니다.
+
+### 결정
+- `contents/docs/openrouter-setup.mdx`의 Cursor 섹션을 절차형 가이드로 재작성합니다.
+- 지원 형태를 OpenAI API Key + Base URL override 방식으로 명시합니다.
+- OpenRouter 안내 기준으로 아래 설정 절차를 문서화합니다.
+  - `Settings -> Cursor Settings -> Models` 이동
+  - `API Keys`에서 OpenAI API Key 활성화, OpenRouter 키 입력, `Override OpenAI Base URL` 활성화
+  - Base URL `https://openrouter.ai/api/v1` 설정 및 모델 추가 단계 안내
+- 추가 참고 링크로 OpenRouter의 Cursor 모델 사용 공지 페이지를 포함합니다.
+
+### 결과
+- Cursor 사용자는 UI 클릭 경로와 입력 항목을 기준으로 OpenRouter 연결을 빠르게 재현할 수 있습니다.
+- 도구별 섹션 품질이 일관되어 문서 학습/검증 비용이 낮아집니다.

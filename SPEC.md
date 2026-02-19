@@ -111,6 +111,15 @@
   - 방법 B: `~/.claude/settings.json` 또는 `.claude/settings.local.json`의 `env` 구성
 - Claude Code 섹션은 Windows PowerShell 설정(세션/영구)과 실행/검증/트러블슈팅 절차를 포함해야 합니다.
 
+### FR-012 오픈라우터 설정 문서의 Cursor 요구사항
+- `오픈라우터 설정` 문서(`openrouter-setup`)는 Cursor 설정 섹션을 포함해야 합니다.
+- Cursor 섹션은 아래 지원 형태를 명시해야 합니다.
+  - OpenAI API Key + Base URL override 방식으로 OpenRouter 연결 가능
+- Cursor 섹션은 OpenRouter 안내 기준의 설정 경로와 절차를 포함해야 합니다.
+  - 경로: `Settings -> Cursor Settings -> Models`
+  - `API Keys` 섹션 설정: OpenAI API Key 활성화, OpenRouter 키 입력, `Override OpenAI Base URL` 활성화, Base URL `https://openrouter.ai/api/v1` 지정
+  - 모델 추가 단계에서 OpenRouter 모델 선택 안내
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -135,3 +144,5 @@
 - AC-010: `/docs/openrouter-setup` 문서의 Codex 섹션에는 방법 A/B 설정 절차, `model = "openai/gpt-5.2"` 예시, `https://openrouter.ai/api/v1` 엔드포인트가 명시되어야 합니다.
 - AC-011: `/docs/openrouter-setup` 문서의 Claude Code 섹션에는 4개 필수 환경변수(`OPENROUTER_API_KEY`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_API_KEY=""`)와 `https://openrouter.ai/api` 엔드포인트가 명시되어야 합니다.
 - AC-012: `/docs/openrouter-setup` 문서의 Claude Code 섹션에는 셸 프로필 방식, `settings.json` 방식, Windows PowerShell 방식, `/status` 기반 검증 절차가 포함되어야 합니다.
+- AC-013: `/docs/openrouter-setup` 문서의 Cursor 섹션에는 지원 형태(OpenAI API Key + Base URL override)와 설정 경로(`Settings -> Cursor Settings -> Models`)가 명시되어야 합니다.
+- AC-014: `/docs/openrouter-setup` 문서의 Cursor 섹션에는 `API Keys` 단계별 설정(OpenAI API Key 활성화, OpenRouter 키, `Override OpenAI Base URL`, `https://openrouter.ai/api/v1`)과 모델 추가 안내가 포함되어야 합니다.
