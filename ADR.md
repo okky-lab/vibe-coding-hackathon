@@ -587,3 +587,22 @@
 ### 결과
 - `/team`, `/team/<submission-doc-slug>` 모두에서 공통 내비게이션 헤더와 푸터가 일관되게 노출됩니다.
 - 팀 소개 페이지의 UX가 사이트 전체 정보 구조와 정렬됩니다.
+
+## ADR-030 Fumadocs 기본 Fetch 검색 API(`GET /api/search`) 복구
+
+- 상태: 승인
+- 날짜: 2026-02-20
+
+### 배경
+- 문서 페이지(`/docs`)의 검색 UI는 렌더링되지만, 실제 검색 요청은 동작하지 않았습니다.
+- 원인 분석 결과 기본 검색 클라이언트가 `/api/search`를 호출하는 구조인데, App Router에 해당 엔드포인트가 존재하지 않아 404가 발생했습니다.
+
+### 결정
+- 검색 범위는 `docsSource` 기준 `/docs` 문서만 인덱싱합니다.
+- Fumadocs 서버 검색 API 생성기(`createFromSource`)를 사용해 `src/app/api/search/route.ts`에서 `GET` 핸들러를 노출합니다.
+- 검색 UI(DocsLayout 토글/다이얼로그)는 변경하지 않고 기본 동작을 유지합니다.
+- 정적 인덱스(`staticGET`)나 외부 검색 서비스(Algolia/Orama Cloud) 연동은 이번 범위에서 제외합니다.
+
+### 결과
+- `/api/search`가 404 없이 JSON 검색 결과를 반환해 기존 검색 UI가 즉시 동작합니다.
+- 구현 복잡도를 최소화하면서 Fumadocs 기본 검색 체인과 정합성을 회복합니다.

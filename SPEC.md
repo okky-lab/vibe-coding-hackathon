@@ -12,6 +12,7 @@
 - 문서 콘텐츠(frontmatter + MDX 본문) 기반 렌더링
 - 존재하지 않는 문서 경로의 오류 처리
 - LLM 안내용 텍스트 엔드포인트(`/llms.txt`)
+- Fumadocs 문서 검색 API 엔드포인트(`/api/search`)
 
 ### 2.2 제외 범위
 - 신청/결제/인증/회원가입 기능
@@ -242,6 +243,14 @@
 - `/team`과 `/team/<submission-doc-slug>` 페이지는 사이트 공통 헤더와 푸터를 포함해야 합니다.
 - 팀 소개 페이지 구간도 `HomeLayout` 기반 내비게이션과 `SiteFooter`를 동일하게 사용해야 합니다.
 
+### FR-031 Fumadocs 문서 검색 API 복구
+- 시스템은 Fumadocs 기본 검색 경로 `GET /api/search`를 제공해야 합니다.
+- `GET /api/search`는 `query` 파라미터를 받아 `/docs` 문서 컬렉션 범위에서 검색 결과를 반환해야 합니다.
+- `GET /api/search` 응답은 JSON 배열이어야 하며, 각 항목은 Fumadocs `SortedResult` 스키마(`id`, `url`, `type`, `content`, optional `breadcrumbs`, `contentWithHighlights`)를 따라야 합니다.
+- `query`가 비어있는 요청(`GET /api/search`)은 HTTP 200과 빈 배열(`[]`)을 반환해야 합니다.
+- 검색 구현은 `docsSource` 기반 `createFromSource`를 사용해야 하며, UI 컴포넌트 커스터마이즈 없이 기존 DocsLayout 검색 토글/다이얼로그와 호환되어야 합니다.
+- `/api/search` 요청은 404를 반환하지 않아야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -309,3 +318,11 @@
 - AC-053: `/sponsor` 페이지의 로고/카드 클릭 시 각각 `https://ebrain.kr/`, `https://popupstudio.ai/` 새 탭으로 이동해야 한다.
 - AC-054: 랜딩 페이지 CTA(`Get Started`, `GitHub`) 하단에는 Sponsor 섹션이 노출되지 않아야 한다.
 - AC-055: `/team`과 `/team/<submission-doc-slug>`에 접속하면 상단 헤더 내비게이션과 하단 푸터가 함께 렌더링되어야 한다.
+- AC-056: 사용자가 `/api/search?query=해카톤`에 요청하면 HTTP 200과 JSON 배열 응답을 확인할 수 있어야 한다.
+- AC-057: 사용자가 `/api/search?query=참가방법`에 요청하면 결과 배열에 `/docs/how-to-participate` 관련 항목이 포함되어야 한다.
+- AC-058: 사용자가 `/api/search`(query 미포함)로 요청하면 HTTP 200과 빈 배열(`[]`)을 반환해야 한다.
+- AC-059: `/docs`에서 검색 토글 버튼을 클릭하면 검색 다이얼로그가 열려야 한다.
+- AC-060: 검색 결과 항목 클릭 시 해당 문서 경로(`/docs/...`)로 이동해야 한다.
+- AC-061: `/api/search` 요청은 404를 반환하지 않아야 한다.
+- AC-062: `pnpm lint:app` 실행 시 에러 없이 완료되어야 한다.
+- AC-063: `pnpm typecheck:app` 실행 시 baseline 대비 신규 타입 오류가 없어야 한다.
