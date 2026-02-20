@@ -224,7 +224,11 @@
 
 ### FR-027 공식 소스 참조 기반 Footer 수동 적용
 - `Simple Footer` 설치가 불가능하고 사용자가 명시 승인한 경우, 공식 소스(`goosen-x/gooseui`의 `footer-simple.tsx`)를 참조해 `src/components/site-footer.tsx`를 구현할 수 있어야 합니다.
-- 수동 적용 시에도 기존 사이트 콘텐츠(해카톤 안내 문구, `OKKY`, `개요`, `행동강령` 링크)는 유지되어야 합니다.
+- 수동 적용 시에도 기존 사이트 주요 링크(`OKKY`, `개요`, `행동강령`)는 유지되어야 합니다.
+
+### FR-028 Footer 로고/중앙 문구 정렬
+- Footer 로고는 네비게이션 로고와 동일한 OKKY 이미지(`https://static.cdn.okky.kr/okky-web/public/okky.png`)를 사용해야 합니다.
+- Footer의 중앙 안내 문구(로고 하단 소개 문장)는 제거되어야 합니다.
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
@@ -286,3 +290,4 @@
 - AC-046: `components.json`의 `registries`에 `@gooseui: https://gooseui.pro/r/{name}.json` 항목이 존재해야 한다.
 - AC-047: Footer 설치 시도 4건(`@gooseui/footer-simple`, `@gooseui/footer-01`, `.../blocks/footer-simple.json`, `.../blocks/footer-01.json`)이 모두 404로 실패하면 수동 적용 없이 종료되어야 한다.
 - AC-048: 사용자가 공식 소스 참조 수동 적용을 명시 승인하면 `src/components/site-footer.tsx`는 Simple Footer 구조를 반영하면서 기존 한글 안내 문구와 3개 링크를 유지해야 한다.
+- AC-049: Footer 로고는 네비게이션과 동일한 OKKY 이미지 로고를 사용하고, 로고 하단 중앙 안내 문구는 노출되지 않아야 한다.
