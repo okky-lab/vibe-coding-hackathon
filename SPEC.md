@@ -230,11 +230,13 @@
 - Footer 로고는 네비게이션 로고와 동일한 OKKY 이미지(`https://static.cdn.okky.kr/okky-web/public/okky.png`)를 사용해야 합니다.
 - Footer의 중앙 안내 문구(로고 하단 소개 문장)는 제거되어야 합니다.
 
-### FR-029 랜딩 CTA 하단 Sponsor 로고 노출
-- 랜딩 페이지 중앙의 `Get Started`, `GitHub` CTA 하단에는 `Sponsor` 구간이 표시되어야 합니다.
-- `Sponsor` 구간에는 아래 두 로고가 각각 외부 링크와 함께 표시되어야 합니다.
+### FR-029 스폰서 전용 페이지 제공
+- 시스템은 `/sponsor` 경로를 제공해야 합니다.
+- 스폰서 전용 페이지에는 아래 두 회사의 로고와 간략한 회사 소개가 표시되어야 합니다.
   - `https://ebrain.kr/`
   - `https://popupstudio.ai/`
+- 각 로고/카드는 해당 회사 홈페이지로 이동하는 외부 링크를 제공해야 합니다.
+- 랜딩 페이지 중앙 CTA 하단에는 Sponsor 섹션이 노출되지 않아야 합니다.
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
@@ -299,3 +301,6 @@
 - AC-049: Footer 로고는 네비게이션과 동일한 OKKY 이미지 로고를 사용하고, 로고 하단 중앙 안내 문구는 노출되지 않아야 한다.
 - AC-050: 랜딩 페이지 CTA(`Get Started`, `GitHub`) 하단에 `Sponsor` 레이블이 노출되어야 한다.
 - AC-051: `Sponsor` 영역의 eBrain/PopupStudio 로고 클릭 시 각각 `https://ebrain.kr/`, `https://popupstudio.ai/` 새 탭으로 이동해야 한다.
+- AC-052: `/sponsor` 페이지에서 eBrain, PopupStudio 로고와 간략한 회사 소개 텍스트를 확인할 수 있어야 한다.
+- AC-053: `/sponsor` 페이지의 로고/카드 클릭 시 각각 `https://ebrain.kr/`, `https://popupstudio.ai/` 새 탭으로 이동해야 한다.
+- AC-054: 랜딩 페이지 CTA(`Get Started`, `GitHub`) 하단에는 Sponsor 섹션이 노출되지 않아야 한다.
