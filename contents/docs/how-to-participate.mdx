@@ -53,13 +53,31 @@ description: 해카톤 참가 프로세스와 제출 형식을 정리한 문서�
 
 ### 5.1 스킬 설치 (1회)
 
+`hackathon-submission` 스킬은 아래 경로에 두면 3개 에이전트가 모두 자동 발견합니다.
+
+- Codex: `.agents/skills/hackathon-submission`
+- Gemini CLI: `.agents/skills/hackathon-submission` (`.gemini/skills` alias)
+- Claude Code: `.claude/skills/hackathon-submission`
+
+레포를 직접 준비할 때(권장):
+
 ```bash
-CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-python3 "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-github.py" \
-  --url https://github.com/okky-lab/vibe-coding-hackathon/tree/main/skills/hackathon-submission
+mkdir -p .agents/skills .claude/skills
+cp -R skills/hackathon-submission .agents/skills/
+cp -R skills/hackathon-submission .claude/skills/
 ```
 
-설치 후 Codex를 재시작해 주세요.
+임의 프로젝트에서 GitHub로 바로 내려받을 때:
+
+```bash
+mkdir -p .agents/skills .claude/skills
+python3 "$HOME/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py" \
+  --url https://github.com/okky-lab/vibe-coding-hackathon/tree/main/skills/hackathon-submission \
+  --dest .agents/skills
+cp -R .agents/skills/hackathon-submission .claude/skills/
+```
+
+설치 후 Codex/Claude/Gemini를 재시작해 주세요.
 
 ### 5.2 제출 실행 (채팅 1회)
 

@@ -147,6 +147,16 @@
 - 문서 본문에서 `OpenRouter API Key 발급` 절은 제거되어야 합니다.
 - 도구 공통 입력값의 Model ID 안내는 OpenRouter 최신 모델 목록 페이지(`https://openrouter.ai/models?order=newest`)를 참조하도록 명시해야 합니다.
 
+### FR-016 참가방법 문서의 제출 스킬 설치 경로 통합
+- `참가방법` 문서(`how-to-participate`)의 `5.1 스킬 설치 (1회)`는 Codex/Claude/Gemini 동시 호환 경로를 안내해야 합니다.
+- 문서는 아래 자동 발견 경로를 명시해야 합니다.
+  - Codex: `.agents/skills/hackathon-submission`
+  - Gemini CLI: `.agents/skills/hackathon-submission` (`.gemini/skills` alias)
+  - Claude Code: `.claude/skills/hackathon-submission`
+- 문서는 레포 준비용 설치 절차로 `skills/hackathon-submission`을 `.agents/skills`, `.claude/skills`로 복사하는 명령을 포함해야 합니다.
+- 문서는 임의 프로젝트 설치 절차로 GitHub installer 명령(`install-skill-from-github.py`)과 `.claude/skills` 복사 단계를 포함해야 합니다.
+- 문서는 설치 후 Codex/Claude/Gemini 재시작 안내를 포함해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -178,3 +188,6 @@
 - AC-017: `/docs/openrouter-setup` 문서의 3번 섹션 하단에는 `현재 지원 불가능한 도구` 하위 섹션이 있어야 하며, Gemini CLI, Windsurf, Antigravity의 OpenRouter API Key 직접 입력 연결 미지원 상태가 함께 명시되어야 합니다.
 - AC-018: `/docs/openrouter-setup` 문서의 1번 섹션은 도구를 "사용 가능"과 "사용 불가능(지금은 OpenRouter에 바로 연결할 수 없는 도구)"으로 분리해 표시해야 합니다.
 - AC-019: `/docs/openrouter-setup` 문서에는 `OpenRouter API Key 발급` 섹션이 없어야 하며, 공통 입력값의 Model ID는 `https://openrouter.ai/models?order=newest` 참조 안내로 표기되어야 합니다.
+- AC-020: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 Codex/Gemini/Claude의 자동 발견 경로 3개가 모두 명시되어야 합니다.
+- AC-021: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 `skills/hackathon-submission`을 `.agents/skills`, `.claude/skills`로 복사하는 설치 명령이 포함되어야 합니다.
+- AC-022: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 GitHub installer 기반 설치 명령(`--url .../skills/hackathon-submission`, `--dest .agents/skills`)과 `.claude/skills` 복사 및 재시작 안내가 포함되어야 합니다.

@@ -172,3 +172,27 @@
 ### 결과
 - 사용 가능한 도구 설정 순서(Codex/Claude/Cursor/OpenCode/Careti)가 연속적으로 정리되어 따라 하기 쉬워집니다.
 - 미지원 도구 정보는 별도 묶음으로 확인할 수 있어 문서 스캔 속도와 이해도가 개선됩니다.
+
+## ADR-009 제출 스킬의 다중 에이전트 발견 경로 통합
+
+- 상태: 승인
+- 날짜: 2026-02-20
+
+### 배경
+- 제출 스킬 설치 안내가 Codex 중심(`skills/hackathon-submission` URL)으로만 작성되어 Claude Code/Gemini CLI 사용자는 별도 매핑 규칙을 직접 해석해야 했습니다.
+- 해카톤 운영 기준에서는 참가자 도구 선택이 자유로우므로, 동일 스킬을 3개 에이전트에서 바로 발견할 수 있는 경로 표준화가 필요했습니다.
+
+### 결정
+- 레포에 `hackathon-submission` 스킬을 아래 경로로 배치합니다.
+  - `.agents/skills/hackathon-submission`
+  - `.claude/skills/hackathon-submission`
+- Gemini CLI는 Workspace alias 규칙에 따라 `.agents/skills`를 그대로 사용합니다.
+- `contents/docs/how-to-participate.mdx`의 제출 준비 섹션을 다중 에이전트 기준으로 재작성합니다.
+  - 레포 로컬 복사 설치 절차
+  - GitHub installer(`install-skill-from-github.py`) 기반 설치 절차
+  - 설치 후 Codex/Claude/Gemini 재시작 안내
+- 동기화 방식은 심볼릭 링크 대신 복사 기반을 기본으로 안내해 Windows/권한 제약 환경에서도 동일 절차를 유지합니다.
+
+### 결과
+- 참가자는 사용 에이전트(Codex/Claude/Gemini)와 관계없이 동일한 스킬 이름/구조로 제출 자동화를 실행할 수 있습니다.
+- 설치 가이드가 도구별 분기 없이 단일 절차로 정리되어 제출 준비 시간이 단축됩니다.
