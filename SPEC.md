@@ -193,6 +193,10 @@
 - 팀 제출 상세 페이지 제목은 `projectName`을 우선 사용하고, 값이 없으면 `name`을 사용해야 합니다.
 - 팀 제출 상세 페이지 설명은 `projectSummary`를 우선 사용하고, 값이 없으면 `bio`를 사용해야 합니다.
 
+### FR-023 GNB FAQ 링크 경로 통일
+- 상단 GNB의 `FAQ` 메뉴는 `href="/docs/faq"` 경로로 이동해야 합니다.
+- 상단 GNB의 `FAQ` 메뉴는 레거시 FAQ 경로(`/faq`)를 직접 가리키지 않아야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -243,3 +247,4 @@
 - AC-036: `/team`에서 `test-project` 카드의 이미지 또는 프로젝트명을 클릭하면 `/team/submission-chlrb-test-project`로 이동해야 한다.
 - AC-037: `/team/submission-chlrb-test-project` 페이지에는 `contents/team/submission-chlrb-test-project.mdx` 본문과 TOC가 렌더링되어야 한다.
 - AC-038: `/team/<submission-doc-slug>` 메타데이터는 제목(`projectName` 우선)과 설명(`projectSummary` 우선)을 노출해야 한다.
+- AC-039: 상단 GNB에서 `FAQ` 메뉴 클릭 시 사용자는 `/docs/faq` 문서 페이지로 이동해야 한다.

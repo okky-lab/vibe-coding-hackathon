@@ -26,7 +26,7 @@ export const siteConfig: SiteConfig = {
     { label: "홈", href: "/" },
     { label: "행사개요", href: "/docs/overview" },
     { label: "일정", href: "/docs/schedule" },
-    { label: "FAQ", href: "/faq" },
+    { label: "FAQ", href: "/docs/faq" },
     { label: "팀", href: "/team" },
   ],
 };
