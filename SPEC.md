@@ -220,7 +220,11 @@
 ### FR-026 GooseUI Footer 설치 실패 시 중단 규칙
 - Footer 설치는 `@gooseui/footer-simple`을 1차로 시도하고, 실패 시 `@gooseui/footer-01`을 2차로 시도해야 합니다.
 - 네임스페이스 설치가 모두 실패하면 URL 직접 설치(`https://gooseui.pro/r/blocks/footer-simple.json`, `https://gooseui.pro/r/blocks/footer-01.json`)를 재시도해야 합니다.
-- 위 4개 시도가 모두 실패하면 수동 코드 복사 없이 작업을 중단하고 실패 근거를 문서화해야 합니다.
+- 위 4개 시도가 모두 실패하면 기본 동작은 작업 중단 및 실패 근거 문서화이며, 사용자가 공식 소스 참조를 명시 승인한 경우에 한해 수동 적용을 허용합니다.
+
+### FR-027 공식 소스 참조 기반 Footer 수동 적용
+- `Simple Footer` 설치가 불가능하고 사용자가 명시 승인한 경우, 공식 소스(`goosen-x/gooseui`의 `footer-simple.tsx`)를 참조해 `src/components/site-footer.tsx`를 구현할 수 있어야 합니다.
+- 수동 적용 시에도 기존 사이트 콘텐츠(해카톤 안내 문구, `OKKY`, `개요`, `행동강령` 링크)는 유지되어야 합니다.
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
@@ -281,3 +285,4 @@
 - AC-045: `/llms.txt`의 `사전 준비사항` 섹션에는 `필수 준비물`, `사전 권장 준비` 문자열이 포함되지 않아야 한다.
 - AC-046: `components.json`의 `registries`에 `@gooseui: https://gooseui.pro/r/{name}.json` 항목이 존재해야 한다.
 - AC-047: Footer 설치 시도 4건(`@gooseui/footer-simple`, `@gooseui/footer-01`, `.../blocks/footer-simple.json`, `.../blocks/footer-01.json`)이 모두 404로 실패하면 수동 적용 없이 종료되어야 한다.
+- AC-048: 사용자가 공식 소스 참조 수동 적용을 명시 승인하면 `src/components/site-footer.tsx`는 Simple Footer 구조를 반영하면서 기존 한글 안내 문구와 3개 링크를 유지해야 한다.
