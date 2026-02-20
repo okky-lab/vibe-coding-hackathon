@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { docsSource } from "@/lib/docs-source";
 import { submittedTeams } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -16,25 +15,14 @@ export const metadata: Metadata = {
 
 type TeamCard = (typeof submittedTeams)[number];
 
-function slugifyProjectName(value: string) {
-  const normalized = value
-    .trim()
-    .toLowerCase()
-    .replace(/[\s_]+/g, "-")
-    .replace(/[^\p{L}\p{N}-]+/gu, "-")
-    .replace(/-{2,}/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  return normalized;
+function toTeamDetailSlug(path: string) {
+  return path.replace(/\.mdx?$/i, "");
 }
 
-function getResultDocLink(team: TeamCard, availableDocUrls: Set<string>) {
-  if (!team.projectName) return null;
-  const projectSlug = slugifyProjectName(team.projectName);
-  if (!projectSlug) return null;
-
-  const resultDocUrl = `/docs/vibe-coding/${projectSlug}`;
-  return availableDocUrls.has(resultDocUrl) ? resultDocUrl : null;
+function getResultDocLink(team: TeamCard) {
+  const slug = team.info.path?.trim();
+  if (!slug) return null;
+  return `/team/${encodeURIComponent(toTeamDetailSlug(slug))}`;
 }
 
 function getPrimaryLink(team: TeamCard) {
@@ -61,13 +49,6 @@ function formatSubmittedAt(value?: string) {
 }
 
 export default function TeamsPage() {
-  const availableDocUrls = new Set(
-    docsSource
-      .getPages()
-      .map((page) => page.url)
-      .filter((url) => url.startsWith("/docs/vibe-coding/")),
-  );
-
   return (
     <main className="[grid-area:main] w-full px-4 pb-20 pt-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14">
       <div className="mx-auto w-full max-w-[1100px]">
@@ -81,7 +62,7 @@ export default function TeamsPage() {
         <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           {submittedTeams.map((team) => {
             const primaryLink = getPrimaryLink(team);
-            const resultDocLink = getResultDocLink(team, availableDocUrls);
+            const resultDocLink = getResultDocLink(team);
             const projectTitle = team.projectName ?? "프로젝트 미기재";
 
             return (

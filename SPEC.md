@@ -187,6 +187,12 @@
 - `hackathon-submission` 스킬은 위 단일 레벨 문서/자산 경로를 기본 출력 규약으로 사용해야 합니다.
 - `contents/docs/vibe-coding/meta.json`의 `pages`에는 팀 슬러그가 아닌 프로젝트 슬러그가 직접 등록되어야 합니다.
 
+### FR-022 팀 카드 상세 문서 라우팅
+- `/team`의 프로젝트 카드(이미지/제목)를 클릭하면 해당 카드의 원본 팀 제출 문서 slug 경로(`/team/<submission-doc-slug>`)로 이동해야 합니다.
+- 팀 제출 상세 경로(`/team/<submission-doc-slug>`)는 `contents/team/*.mdx` 본문과 TOC를 렌더링해야 합니다.
+- 팀 제출 상세 페이지 제목은 `projectName`을 우선 사용하고, 값이 없으면 `name`을 사용해야 합니다.
+- 팀 제출 상세 페이지 설명은 `projectSummary`를 우선 사용하고, 값이 없으면 `bio`를 사용해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -234,3 +240,6 @@
 - AC-033: `hackathon-submission` 스킬 실행 시 결과 문서는 `contents/docs/vibe-coding/<project-slug>.mdx` 경로로 생성되어야 하며 팀/프로젝트 중첩 디렉터리를 만들지 않아야 한다.
 - AC-034: `hackathon-submission` 스킬 실행 시 자산은 `contents/docs/vibe-coding/assets/<project-slug>/demo|evidence|team/README.md`로 생성되어야 하고, `contents/docs/vibe-coding/meta.json`에는 `<project-slug>`가 등록되어야 한다.
 - AC-035: `/team` 카드 목록은 `submittedAt`이 최신인 항목부터 표시되어야 하며, `submittedAt`이 없거나 파싱 불가한 항목은 마지막 구간에 표시되어야 한다.
+- AC-036: `/team`에서 `test-project` 카드의 이미지 또는 프로젝트명을 클릭하면 `/team/submission-chlrb-test-project`로 이동해야 한다.
+- AC-037: `/team/submission-chlrb-test-project` 페이지에는 `contents/team/submission-chlrb-test-project.mdx` 본문과 TOC가 렌더링되어야 한다.
+- AC-038: `/team/<submission-doc-slug>` 메타데이터는 제목(`projectName` 우선)과 설명(`projectSummary` 우선)을 노출해야 한다.
