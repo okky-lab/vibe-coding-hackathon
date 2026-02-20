@@ -529,3 +529,25 @@
 ### 결과
 - Footer와 네비게이션의 브랜드 시각 요소가 일관되게 정렬됩니다.
 - Footer 중앙 텍스트가 제거되어 사용자 요청한 간결한 레이아웃을 충족합니다.
+
+## ADR-027 랜딩 CTA 하단 Sponsor 로고/링크 추가
+
+- 상태: 승인
+- 날짜: 2026-02-20
+
+### 배경
+- 랜딩 중앙 CTA(`Get Started`, `GitHub`) 아래에 스폰서 노출 영역이 필요했습니다.
+- 스폰서 식별성과 이동 동선을 함께 제공하기 위해 텍스트 링크가 아닌 로고 클릭 방식이 요구되었습니다.
+
+### 결정
+- `src/app/(site)/page.tsx`의 CTA 하단에 `Sponsor` 섹션을 추가합니다.
+- 아래 두 스폰서 로고를 외부 링크와 함께 노출합니다.
+  - eBrain: `https://ebrain.kr/`
+  - PopupStudio: `https://popupstudio.ai/`
+- 로고 자산은 외부 핫링크 의존도를 줄이기 위해 `public/sponsors`에 저장해 사용합니다.
+  - `/sponsors/ebrain-logo.png`
+  - `/sponsors/popupstudio-horizontal-white.svg`
+
+### 결과
+- 랜딩에서 스폰서를 CTA 바로 아래에서 즉시 확인하고 이동할 수 있습니다.
+- 배포 환경에서 로고 노출이 정적 자산으로 안정적으로 유지됩니다.

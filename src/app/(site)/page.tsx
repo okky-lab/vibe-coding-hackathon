@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Star } from "lucide-react";
 import Link from "next/link";
 
@@ -67,6 +68,41 @@ export default function HomePage() {
             </TooltipPopup>
           </Tooltip>
         </TooltipProvider>
+      </div>
+      <div className="mt-6 flex flex-col items-center gap-3">
+        <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Sponsor</p>
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+          <a
+            href="https://ebrain.kr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="eBrain 홈페이지 (새 탭)"
+            className="inline-flex h-14 w-14 items-center justify-center rounded-xl border border-border bg-background p-2 transition-colors hover:bg-muted"
+          >
+            <Image
+              src="/sponsors/ebrain-logo.png"
+              alt="eBrain 로고"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+            />
+          </a>
+          <a
+            href="https://popupstudio.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="PopupStudio 홈페이지 (새 탭)"
+            className="inline-flex h-14 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 transition-opacity hover:opacity-90"
+          >
+            <Image
+              src="/sponsors/popupstudio-horizontal-white.svg"
+              alt="PopupStudio 로고"
+              width={191}
+              height={27}
+              className="h-6 w-auto object-contain"
+            />
+          </a>
+        </div>
       </div>
     </div>
   );
