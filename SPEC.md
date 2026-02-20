@@ -11,6 +11,7 @@
 - 문서 인덱스 및 문서 상세 열람 기능
 - 문서 콘텐츠(frontmatter + MDX 본문) 기반 렌더링
 - 존재하지 않는 문서 경로의 오류 처리
+- LLM 안내용 텍스트 엔드포인트(`/llms.txt`)
 
 ### 2.2 제외 범위
 - 신청/결제/인증/회원가입 기능
@@ -201,6 +202,16 @@
 - 운영 메인 브랜치의 `contents/team` 목록에는 검증 목적의 테스트 제출 샘플(`submission-chlrb-test-project`)이 포함되지 않아야 합니다.
 - `/team` 페이지는 실제 제출/팀 데이터만 표시해야 합니다.
 
+### FR-025 LLM 안내 문서 `llms.txt` 라우트
+- 시스템은 LLM 안내 문서 경로 `/llms.txt`를 제공해야 합니다.
+- `/llms.txt` 응답의 MIME 타입은 `text/plain; charset=utf-8`이어야 합니다.
+- `/llms.txt` 본문은 정적 고정 텍스트여야 하며, 아래 3개 섹션을 포함해야 합니다.
+  - 행사 기본소개
+  - 사전 준비사항
+  - 제출 준비사항
+- `/llms.txt` 본문 내 참조 링크는 절대 URL이어야 하며, 기본 도메인은 `https://vibecoding.okky.kr`이어야 합니다.
+- 운영 문서 변경 시 `/llms.txt` 본문은 수동 동기화 정책을 따른다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -253,3 +264,7 @@
 - AC-038: `/team/<submission-doc-slug>` 메타데이터는 제목(`projectName` 우선)과 설명(`projectSummary` 우선)을 노출해야 한다.
 - AC-039: 상단 GNB에서 `FAQ` 메뉴 클릭 시 사용자는 `/docs/faq` 문서 페이지로 이동해야 한다.
 - AC-040: 운영 메인 브랜치의 `contents/team`에는 `submission-chlrb-test-project.mdx`가 존재하지 않아야 하며, `/team` 목록에 `test-project` 카드가 노출되지 않아야 한다.
+- AC-041: 사용자가 `/llms.txt`에 접속하면 HTTP 200 응답과 `text/plain; charset=utf-8` 헤더를 확인할 수 있어야 한다.
+- AC-042: `/llms.txt` 본문에는 `행사 기본소개`, `사전 준비사항`, `제출 준비사항` 3개 섹션 제목이 모두 포함되어야 한다.
+- AC-043: `/llms.txt` 본문에는 `https://vibecoding.okky.kr` 도메인을 사용하는 절대 URL 참조 링크가 포함되어야 한다.
+- AC-044: `/llms.txt` 본문은 UTF-8 한글 텍스트가 깨지지 않고 출력되어야 한다.
