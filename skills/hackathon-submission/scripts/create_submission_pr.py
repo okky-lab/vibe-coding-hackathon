@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import locale
 import re
 import secrets
 import shutil
@@ -46,6 +47,24 @@ class CommandError(RuntimeError):
     """Raised when a shell command fails."""
 
 
+def decode_output(raw: Optional[bytes]) -> str:
+    if not raw:
+        return ""
+    preferred = locale.getpreferredencoding(False) or "utf-8"
+    candidates = ["utf-8", preferred, "cp949"]
+    seen = set()
+    for encoding in candidates:
+        normalized = encoding.lower()
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        try:
+            return raw.decode(encoding).strip()
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace").strip()
+
+
 def run(
     cmd: Sequence[str],
     *,
@@ -56,11 +75,11 @@ def run(
     result = subprocess.run(
         list(cmd),
         cwd=str(cwd) if cwd else None,
-        text=True,
+        text=False,
         capture_output=capture_output,
     )
-    stdout = result.stdout.strip() if result.stdout else ""
-    stderr = result.stderr.strip() if result.stderr else ""
+    stdout = decode_output(result.stdout)
+    stderr = decode_output(result.stderr)
     if check and result.returncode != 0:
         pretty_cmd = " ".join(cmd)
         raise CommandError(f"Command failed ({result.returncode}): {pretty_cmd}\n{stderr}")
