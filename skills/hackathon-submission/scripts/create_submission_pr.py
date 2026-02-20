@@ -15,7 +15,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, Iterable, Optional, Sequence
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 DEFAULT_TARGET_REPO = "okky-lab/vibe-coding-hackathon"
 DEFAULT_TARGET_REPO_URL = "https://github.com/okky-lab/vibe-coding-hackathon"
@@ -41,6 +41,25 @@ ASSET_READMES = {
     "evidence": "# Evidence Assets\n\n실행/검증 결과 스크린샷 및 로그 파일을 저장합니다.\n",
     "team": "# Team Assets\n\n팀 소개 이미지, 프로필 이미지, 발표용 팀 자료를 저장합니다.\n",
 }
+REQUIRED_INPUT_FIELDS: List[Tuple[str, str]] = [
+    ("team_name", "팀명"),
+    ("project_name", "프로젝트명"),
+    ("repo_url", "GitHub 저장소 URL (Public)"),
+    ("demo_url_or_run_method", "데모 URL 또는 실행 방법"),
+    ("problem_definition", "문제 정의"),
+    ("one_liner", "한 줄 소개"),
+    ("team_roles", "팀 소개 및 역할"),
+]
+FIELD_HINTS: Dict[str, str] = {
+    "team_name": "예: 팀 OKKY",
+    "project_name": "예: VibeShip",
+    "repo_url": "예: https://github.com/<owner>/<repo>",
+    "demo_url_or_run_method": "예: https://demo.example.com 또는 README 실행 방법 참고",
+    "problem_definition": "해결하려는 문제를 1~3문장으로 입력하세요.",
+    "one_liner": "프로젝트를 한 문장으로 요약하세요.",
+    "team_roles": "예: - 홍길동: FE\\n- 김철수: BE",
+}
+PRIORITY_DEMO_URL_KEYWORDS = ("demo", "vercel", "netlify", "render", "youtube", "youtu.be", "loom")
 
 
 class CommandError(RuntimeError):
@@ -202,6 +221,391 @@ def create_assets(doc_dir: Path) -> None:
         readme_path = assets_root / folder / "README.md"
         readme_path.parent.mkdir(parents=True, exist_ok=True)
         readme_path.write_text(content, encoding="utf-8")
+
+
+def clean_cli_value(value: Optional[str]) -> str:
+    return value.strip() if isinstance(value, str) else ""
+
+
+def preview_value(value: str, *, limit: int = 120) -> str:
+    compact = value.replace("\n", "\\n")
+    if len(compact) <= limit:
+        return compact
+    return f"{compact[: limit - 3]}..."
+
+
+def normalize_heading(text: str) -> str:
+    return re.sub(r"[^0-9a-z가-힣]+", "", text.lower())
+
+
+def read_text_if_exists(path: Path) -> str:
+    if not path.exists():
+        return ""
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return path.read_text(encoding="utf-8", errors="replace")
+
+
+def load_project_readme(project_root: Path) -> str:
+    for filename in ("README.md", "readme.md", "README.MD"):
+        content = read_text_if_exists(project_root / filename)
+        if content:
+            return content
+    return ""
+
+
+def load_project_package_json(project_root: Path) -> Dict[str, object]:
+    package_json = project_root / "package.json"
+    if not package_json.exists():
+        return {}
+    try:
+        payload = json.loads(package_json.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def split_markdown_sections(markdown: str) -> Dict[str, str]:
+    sections: Dict[str, str] = {}
+    heading = ""
+    body: List[str] = []
+    for line in markdown.splitlines():
+        match = re.match(r"^\s{0,3}#{1,6}\s+(.+?)\s*$", line)
+        if match:
+            if heading:
+                sections[heading] = "\n".join(body).strip()
+            heading = match.group(1).strip()
+            body = []
+            continue
+        if heading:
+            body.append(line)
+    if heading:
+        sections[heading] = "\n".join(body).strip()
+    return sections
+
+
+def extract_first_paragraph(markdown: str) -> str:
+    in_code_block = False
+    paragraph: List[str] = []
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+        if not stripped:
+            if paragraph:
+                break
+            continue
+        if stripped.startswith("#"):
+            if paragraph:
+                break
+            continue
+        if stripped.startswith("|"):
+            if paragraph:
+                break
+            continue
+        if (stripped.startswith("- ") or stripped.startswith("* ") or re.match(r"^\d+\.\s+", stripped)) and not paragraph:
+            continue
+        paragraph.append(stripped)
+        if len(" ".join(paragraph)) >= 220:
+            break
+    return " ".join(paragraph).strip()
+
+
+def select_section(markdown: str, heading_keywords: Sequence[str]) -> str:
+    if not markdown:
+        return ""
+    sections = split_markdown_sections(markdown)
+    normalized_keywords = [normalize_heading(keyword) for keyword in heading_keywords]
+    for heading, body in sections.items():
+        normalized_heading = normalize_heading(heading)
+        if any(keyword in normalized_heading for keyword in normalized_keywords):
+            return body.strip()
+    return ""
+
+
+def extract_bullet_lines(markdown: str, *, limit: int = 8) -> str:
+    bullets: List[str] = []
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("- "):
+            bullets.append(stripped)
+        elif stripped.startswith("* "):
+            bullets.append(f"- {stripped[2:].strip()}")
+        else:
+            numbered = re.match(r"^(\d+)\.\s+(.+)$", stripped)
+            if numbered:
+                bullets.append(f"- {numbered.group(2).strip()}")
+        if len(bullets) >= limit:
+            break
+    return "\n".join(bullets)
+
+
+def normalize_repo_url(url: str) -> str:
+    value = url.strip()
+    if not value:
+        return ""
+    if value.startswith("git@github.com:"):
+        path = value.split(":", 1)[1]
+        if path.endswith(".git"):
+            path = path[:-4]
+        return f"https://github.com/{path}"
+    if value.startswith("ssh://git@github.com/"):
+        path = value.split("ssh://git@github.com/", 1)[1]
+        if path.endswith(".git"):
+            path = path[:-4]
+        return f"https://github.com/{path}"
+    github_http = re.match(r"^https?://github\.com/(.+)$", value)
+    if github_http:
+        path = github_http.group(1).strip("/")
+        if path.endswith(".git"):
+            path = path[:-4]
+        return f"https://github.com/{path}"
+    return value
+
+
+def infer_repo_url(project_root: Path) -> str:
+    origin = run(
+        ["git", "-C", str(project_root), "remote", "get-url", "origin"],
+        check=False,
+    )
+    return normalize_repo_url(origin)
+
+
+def infer_project_name(project_root: Path, repo_url: str, package_json: Dict[str, object]) -> str:
+    package_name = package_json.get("name")
+    if isinstance(package_name, str) and package_name.strip():
+        normalized_name = package_name.strip()
+        if normalized_name.startswith("@") and "/" in normalized_name:
+            normalized_name = normalized_name.split("/", 1)[1]
+        return normalized_name
+
+    github_match = re.match(r"^https?://github\.com/[^/]+/([^/]+)$", repo_url.strip("/"))
+    if github_match:
+        return github_match.group(1)
+    return project_root.name
+
+
+def infer_demo_url_or_run_method(
+    project_root: Path,
+    readme_text: str,
+    package_json: Dict[str, object],
+) -> str:
+    markdown_links = re.findall(r"\[[^\]]+\]\((https?://[^)\s]+)\)", readme_text)
+    plain_urls = re.findall(r"https?://[^\s<>\"]+", readme_text)
+    urls: List[str] = []
+    for raw in [*markdown_links, *plain_urls]:
+        candidate = raw.rstrip(").,]>\"'")
+        if "](" in candidate:
+            candidate = candidate.split("](", 1)[-1]
+        if candidate and candidate not in urls:
+            urls.append(candidate)
+    for keyword in PRIORITY_DEMO_URL_KEYWORDS:
+        for url in urls:
+            if keyword in url.lower():
+                return url
+    if urls:
+        return urls[0]
+
+    scripts = package_json.get("scripts")
+    if isinstance(scripts, dict):
+        script_name = ""
+        for candidate in ("dev", "start", "serve"):
+            if isinstance(scripts.get(candidate), str) and scripts.get(candidate):
+                script_name = candidate
+                break
+        if script_name:
+            if (project_root / "pnpm-lock.yaml").exists():
+                return f"pnpm install && pnpm run {script_name}"
+            if (project_root / "yarn.lock").exists():
+                return f"yarn install && yarn {script_name}"
+            return f"npm install && npm run {script_name}"
+
+    if readme_text:
+        return "README 실행 방법 참고"
+    return ""
+
+
+def infer_problem_definition(readme_text: str) -> str:
+    section = select_section(readme_text, ("문제 정의", "문제", "problem", "pain", "배경"))
+    if section:
+        paragraph = extract_first_paragraph(section)
+        if paragraph:
+            return paragraph
+    inline = re.search(r"(문제\s*정의|problem)\s*[:：]\s*(.+)", readme_text, flags=re.IGNORECASE)
+    if inline:
+        return inline.group(2).strip()
+    return ""
+
+
+def infer_one_liner(readme_text: str, package_json: Dict[str, object], project_name: str) -> str:
+    description = package_json.get("description")
+    if isinstance(description, str) and description.strip():
+        return description.strip()
+
+    paragraph = extract_first_paragraph(readme_text)
+    if paragraph:
+        sentence = re.split(r"(?<=[.!?])\s+", paragraph, maxsplit=1)[0].strip()
+        return sentence if sentence else paragraph
+    if project_name:
+        return f"{project_name} 프로젝트입니다."
+    return ""
+
+
+def infer_team_name(readme_text: str, repo_url: str) -> str:
+    team_match = re.search(r"(팀명|team\s*name)\s*[:：]\s*(.+)", readme_text, flags=re.IGNORECASE)
+    if team_match:
+        return team_match.group(2).strip()
+
+    owner_match = re.match(r"^https?://github\.com/([^/]+)/[^/]+$", repo_url.strip("/"))
+    if owner_match:
+        return owner_match.group(1)
+    return ""
+
+
+def infer_team_roles(project_root: Path, readme_text: str) -> str:
+    section = select_section(
+        readme_text,
+        ("팀 소개 및 역할", "팀 소개", "팀 역할", "팀원", "구성원", "roles", "members", "team"),
+    )
+    bullets = extract_bullet_lines(section)
+    if bullets:
+        return bullets
+
+    if section:
+        lines: List[str] = []
+        for raw_line in section.splitlines():
+            stripped = raw_line.strip("-* ").strip()
+            if ":" in stripped and len(stripped) <= 120:
+                lines.append(f"- {stripped}")
+            if len(lines) >= 8:
+                break
+        if lines:
+            return "\n".join(lines)
+
+    user_name = run(
+        ["git", "-C", str(project_root), "config", "--get", "user.name"],
+        check=False,
+    )
+    if user_name:
+        return f"- {user_name}: 개발"
+    return ""
+
+
+def infer_required_inputs(project_root: Path) -> Dict[str, str]:
+    readme_text = load_project_readme(project_root)
+    package_json = load_project_package_json(project_root)
+    repo_url = infer_repo_url(project_root)
+    project_name = infer_project_name(project_root, repo_url, package_json)
+    return {
+        "team_name": infer_team_name(readme_text, repo_url),
+        "project_name": project_name,
+        "repo_url": repo_url,
+        "demo_url_or_run_method": infer_demo_url_or_run_method(project_root, readme_text, package_json),
+        "problem_definition": infer_problem_definition(readme_text),
+        "one_liner": infer_one_liner(readme_text, package_json, project_name),
+        "team_roles": infer_team_roles(project_root, readme_text),
+    }
+
+
+def resolve_project_root(path: str) -> Path:
+    candidate = Path(path).expanduser().resolve()
+    toplevel = run(
+        ["git", "-C", str(candidate), "rev-parse", "--show-toplevel"],
+        check=False,
+    )
+    if toplevel:
+        return Path(toplevel).resolve()
+    return candidate
+
+
+def print_required_summary(values: Dict[str, str], inferred: Dict[str, str]) -> None:
+    print("\n[VERIFY] 제출 필수 입력값 7개 확인")
+    for field, label in REQUIRED_INPUT_FIELDS:
+        value = values.get(field, "")
+        marker = ""
+        if value and inferred.get(field) and value == inferred[field]:
+            marker = " (자동 유추)"
+        print(f"- {label}: {value}{marker}")
+
+
+def prompt_required_inputs(cli_values: Dict[str, str], inferred: Dict[str, str]) -> Dict[str, str]:
+    print("[PROMPT] 제출에 필요한 7개 필수 항목을 확인합니다.")
+    print("[PROMPT] Enter를 누르면 제안값을 사용합니다. team_roles는 \\n 형식으로 입력할 수 있습니다.")
+
+    values = dict(cli_values)
+    while True:
+        for field, label in REQUIRED_INPUT_FIELDS:
+            hint = FIELD_HINTS.get(field, "")
+            default_value = values.get(field) or inferred.get(field, "")
+            inferred_marker = ""
+            if default_value and not values.get(field) and default_value == inferred.get(field, ""):
+                inferred_marker = " (자동 유추)"
+
+            while True:
+                prompt = f"{label}{inferred_marker}"
+                if default_value:
+                    prompt = f"{prompt} [{preview_value(default_value)}]"
+                prompt = f"{prompt}: "
+                if hint:
+                    print(f"[HINT] {hint}")
+                try:
+                    answer = input(prompt).strip()
+                except EOFError as error:
+                    raise RuntimeError("Interactive input was interrupted.") from error
+                resolved = answer or default_value
+                if resolved.strip():
+                    values[field] = resolved.strip()
+                    break
+                print(f"[ERROR] {label}은(는) 필수 항목입니다.")
+
+        print_required_summary(values, inferred)
+        try:
+            confirmation = input("위 정보로 진행할까요? [Y/n]: ").strip().lower()
+        except EOFError as error:
+            raise RuntimeError("Interactive confirmation was interrupted.") from error
+
+        if confirmation in ("", "y", "yes"):
+            return values
+        if confirmation in ("n", "no"):
+            print("[INFO] 필수 항목을 다시 입력합니다.")
+            continue
+        print("[ERROR] y 또는 n으로 입력해 주세요.")
+
+
+def validate_non_interactive_inputs(cli_values: Dict[str, str], inferred: Dict[str, str]) -> Dict[str, str]:
+    missing = [(field, label) for field, label in REQUIRED_INPUT_FIELDS if not cli_values.get(field)]
+    if not missing:
+        return cli_values
+
+    lines = [
+        "Missing required inputs in non-interactive mode.",
+        "Provide all required CLI arguments, or run interactively to verify inferred values.",
+    ]
+    for field, label in missing:
+        inferred_value = inferred.get(field, "")
+        if inferred_value:
+            lines.append(f"- {label}: 추정값 {preview_value(inferred_value)}")
+        else:
+            lines.append(f"- {label}: 추정값 없음")
+    raise ValueError("\n".join(lines))
+
+
+def collect_required_inputs(args: argparse.Namespace, *, project_root: Path) -> Dict[str, str]:
+    inferred = infer_required_inputs(project_root)
+    cli_values = {
+        field: clean_cli_value(getattr(args, field, ""))
+        for field, _ in REQUIRED_INPUT_FIELDS
+    }
+    interactive = not args.non_interactive and sys.stdin.isatty() and sys.stdout.isatty()
+    if interactive:
+        return prompt_required_inputs(cli_values, inferred)
+    return validate_non_interactive_inputs(cli_values, inferred)
 
 
 def create_submission_artifacts(
@@ -464,13 +868,13 @@ def parser() -> argparse.ArgumentParser:
             f"to fixed upstream {DEFAULT_TARGET_REPO_URL}."
         )
     )
-    p.add_argument("--team-name", required=True)
-    p.add_argument("--project-name", required=True)
-    p.add_argument("--repo-url", required=True)
-    p.add_argument("--demo-url-or-run-method", required=True)
-    p.add_argument("--problem-definition", required=True)
-    p.add_argument("--one-liner", required=True)
-    p.add_argument("--team-roles", required=True)
+    p.add_argument("--team-name", default="")
+    p.add_argument("--project-name", default="")
+    p.add_argument("--repo-url", default="")
+    p.add_argument("--demo-url-or-run-method", default="")
+    p.add_argument("--problem-definition", default="")
+    p.add_argument("--one-liner", default="")
+    p.add_argument("--team-roles", default="")
 
     p.add_argument("--solution", default="")
     p.add_argument("--tech-stack", default="")
@@ -483,6 +887,16 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--extra-links", default="")
 
     p.add_argument("--base-branch", default=DEFAULT_BASE_BRANCH)
+    p.add_argument(
+        "--project-root",
+        default=".",
+        help="Local project root used to infer required submission fields.",
+    )
+    p.add_argument(
+        "--non-interactive",
+        action="store_true",
+        help="Disable interactive required-field questions and confirmation.",
+    )
     p.add_argument("--update", action="store_true")
     p.add_argument("--keep-temp", action="store_true")
     p.add_argument(
@@ -578,15 +992,20 @@ def run_github_dry_run(
 def main() -> int:
     args = parser().parse_args()
     target_repo = DEFAULT_TARGET_REPO
+
+    if args.render_only_dir and args.github_dry_run:
+        print("[ERROR] --render-only-dir and --github-dry-run cannot be used together.", file=sys.stderr)
+        return 1
+
     try:
+        project_root = resolve_project_root(args.project_root)
+        required_inputs = collect_required_inputs(args, project_root=project_root)
+        for field, _ in REQUIRED_INPUT_FIELDS:
+            setattr(args, field, required_inputs[field])
         team_slug = slugify(args.team_name)
         project_slug = slugify(args.project_name)
     except Exception as error:
         print(f"[ERROR] {error}", file=sys.stderr)
-        return 1
-
-    if args.render_only_dir and args.github_dry_run:
-        print("[ERROR] --render-only-dir and --github-dry-run cannot be used together.", file=sys.stderr)
         return 1
 
     if args.github_dry_run:

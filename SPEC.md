@@ -157,6 +157,19 @@
 - 문서는 임의 프로젝트 설치 절차로 GitHub installer 명령(`install-skill-from-github.py`)과 `.claude/skills` 복사 단계를 포함해야 합니다.
 - 문서는 설치 후 Codex/Claude/Gemini 재시작 안내를 포함해야 합니다.
 
+### FR-017 제출 스킬 필수 입력 질의/자동 유추 검증
+- `hackathon-submission` 스킬은 제출 자동화 실행 전에 아래 7개 필수 항목을 사용자에게 질의하고 응답을 받아야 합니다.
+  - 팀명
+  - 프로젝트명
+  - GitHub 저장소 URL (Public)
+  - 데모 URL 또는 실행 방법
+  - 문제 정의
+  - 한 줄 소개
+  - 팀 소개 및 역할
+- 스킬은 프로젝트 컨텍스트(예: README, package metadata, git remote)에서 유추 가능한 항목을 자동 제안해야 합니다.
+- 자동 제안값은 사용자 확인(확정/수정)을 거친 뒤에만 제출 생성 단계로 진행해야 합니다.
+- 비대화형(`non-interactive`) 실행에서 필수값이 누락되면 생성을 중단하고, 누락 항목과 유추값(존재 시)을 오류 메시지로 안내해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -191,3 +204,6 @@
 - AC-020: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 Codex/Gemini/Claude의 자동 발견 경로 3개가 모두 명시되어야 합니다.
 - AC-021: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 `skills/hackathon-submission`을 `.agents/skills`, `.claude/skills`로 복사하는 설치 명령이 포함되어야 합니다.
 - AC-022: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 GitHub installer 기반 설치 명령(`--url .../skills/hackathon-submission`, `--dest .agents/skills`)과 `.claude/skills` 복사 및 재시작 안내가 포함되어야 합니다.
+- AC-023: `create_submission_pr.py`를 대화형 TTY에서 필수 인자 없이 실행하면, 7개 필수 항목 질의 프롬프트가 표시되고 최종 확인 입력을 요구해야 합니다.
+- AC-024: `create_submission_pr.py --non-interactive` 실행 시 필수 인자가 하나라도 누락되면 종료 코드 1로 실패하고 누락 항목 목록을 출력해야 합니다.
+- AC-025: 자동 유추 가능한 값(`project_name`, `repo_url` 등)은 대화형 프롬프트의 기본값으로 제시되어야 하며, 사용자 확인 후 최종 입력값으로 확정되어야 합니다.

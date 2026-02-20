@@ -26,6 +26,36 @@ Collect these required fields before running automation.
 - `one_liner`
 - `team_roles`
 
+### Mandatory Q&A Flow (Required)
+
+Before running any automation, always ask the user to confirm the 7 required fields below.
+
+- 팀명
+- 프로젝트명
+- GitHub 저장소 URL (Public)
+- 데모 URL 또는 실행 방법
+- 문제 정의
+- 한 줄 소개
+- 팀 소개 및 역할
+
+If values can be inferred from the project (README, package metadata, git remote, etc.), prefill them and ask for confirmation.
+
+Use this question format:
+
+```text
+아래 7개 필수 항목을 확인해 주세요.
+1) 팀명: <추정값 또는 비움>
+2) 프로젝트명: <추정값 또는 비움>
+3) GitHub 저장소 URL (Public): <추정값 또는 비움>
+4) 데모 URL 또는 실행 방법: <추정값 또는 비움>
+5) 문제 정의: <추정값 또는 비움>
+6) 한 줄 소개: <추정값 또는 비움>
+7) 팀 소개 및 역할: <추정값 또는 비움>
+수정/확정해서 답변해 주세요.
+```
+
+Do not proceed with unconfirmed inferred values.
+
 Collect these recommended fields if available.
 
 - `tech_stack`
@@ -44,6 +74,14 @@ Optional fields:
 
 Run the script from the skill root.
 
+Interactive intake (recommended, asks + confirms required 7 fields with inferred defaults):
+
+```bash
+python3 scripts/create_submission_pr.py \
+  --project-root . \
+  --github-dry-run
+```
+
 ```bash
 python3 scripts/create_submission_pr.py \
   --team-name "팀 OKKY" \
@@ -52,7 +90,8 @@ python3 scripts/create_submission_pr.py \
   --demo-url-or-run-method "https://example.com/demo" \
   --problem-definition "해결하려는 문제를 작성" \
   --one-liner "한 줄 소개" \
-  --team-roles "- 홍길동: FE\n- 김철수: BE"
+  --team-roles "- 홍길동: FE\n- 김철수: BE" \
+  --non-interactive
 ```
 
 For local rendering only (without GitHub PR):
@@ -66,7 +105,8 @@ python3 scripts/create_submission_pr.py \
   --problem-definition "문제 정의" \
   --one-liner "한 줄 소개" \
   --team-roles "- 홍길동: FE" \
-  --render-only-dir /tmp/hackathon-submission-test
+  --render-only-dir /tmp/hackathon-submission-test \
+  --non-interactive
 ```
 
 For GitHub-inclusive dry-run (auth/fork/clone/render check without push/PR):
@@ -80,7 +120,8 @@ python3 scripts/create_submission_pr.py \
   --problem-definition "문제 정의" \
   --one-liner "한 줄 소개" \
   --team-roles "- 홍길동: FE" \
-  --github-dry-run
+  --github-dry-run \
+  --non-interactive
 ```
 
 ## Output Contract
