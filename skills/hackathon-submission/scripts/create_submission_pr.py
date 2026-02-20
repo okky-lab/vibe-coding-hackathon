@@ -7,7 +7,6 @@ import argparse
 import datetime as dt
 import hashlib
 import json
-import locale
 import re
 import secrets
 import shutil
@@ -15,12 +14,14 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, Iterable, Optional, Sequence, Tuple
 
 DEFAULT_TARGET_REPO = "okky-lab/vibe-coding-hackathon"
 DEFAULT_TARGET_REPO_URL = "https://github.com/okky-lab/vibe-coding-hackathon"
 DEFAULT_BASE_BRANCH = "main"
 DEFAULT_DOC_FILENAME = "vibecoding-result.mdx"
+TEAM_SUBMISSION_FILE_PREFIX = "submission"
+KST = dt.timezone(dt.timedelta(hours=9))
 ALLOWED_FRONTMATTER_KEYS = {"title", "summary", "description", "full"}
 REQUIRED_FRONTMATTER_KEYS = {"title", "summary", "description"}
 REQUIRED_SECTION_HEADERS = [
@@ -28,60 +29,18 @@ REQUIRED_SECTION_HEADERS = [
     "## 제품 링크 또는 실행 방법",
     "## 문제 정의 (Problem)",
     "## 해결 방식 (Solution)",
-    "## 데모 설명 (3분 이내 기준)",
+    "## 한 줄 소개",
     "## 팀 소개 및 역할",
-    "## 기술 스택",
-    "## 실행/검증 방법",
-    "## 라이선스/출처",
-    "## AI 사용 여부 및 검증 방식",
-    "## 제출 체크리스트",
 ]
 ASSET_READMES = {
     "demo": "# Demo Assets\n\n데모 영상, 스크린샷, GIF 파일을 저장합니다.\n",
     "evidence": "# Evidence Assets\n\n실행/검증 결과 스크린샷 및 로그 파일을 저장합니다.\n",
     "team": "# Team Assets\n\n팀 소개 이미지, 프로필 이미지, 발표용 팀 자료를 저장합니다.\n",
 }
-REQUIRED_INPUT_FIELDS: List[Tuple[str, str]] = [
-    ("team_name", "팀명"),
-    ("project_name", "프로젝트명"),
-    ("repo_url", "GitHub 저장소 URL (Public)"),
-    ("demo_url_or_run_method", "데모 URL 또는 실행 방법"),
-    ("problem_definition", "문제 정의"),
-    ("one_liner", "한 줄 소개"),
-    ("team_roles", "팀 소개 및 역할"),
-]
-FIELD_HINTS: Dict[str, str] = {
-    "team_name": "예: 팀 OKKY",
-    "project_name": "예: VibeShip",
-    "repo_url": "예: https://github.com/<owner>/<repo>",
-    "demo_url_or_run_method": "예: https://demo.example.com 또는 README 실행 방법 참고",
-    "problem_definition": "해결하려는 문제를 1~3문장으로 입력하세요.",
-    "one_liner": "프로젝트를 한 문장으로 요약하세요.",
-    "team_roles": "예: - 홍길동: FE\\n- 김철수: BE",
-}
-PRIORITY_DEMO_URL_KEYWORDS = ("demo", "vercel", "netlify", "render", "youtube", "youtu.be", "loom")
 
 
 class CommandError(RuntimeError):
     """Raised when a shell command fails."""
-
-
-def decode_output(raw: Optional[bytes]) -> str:
-    if not raw:
-        return ""
-    preferred = locale.getpreferredencoding(False) or "utf-8"
-    candidates = ["utf-8", preferred, "cp949"]
-    seen = set()
-    for encoding in candidates:
-        normalized = encoding.lower()
-        if normalized in seen:
-            continue
-        seen.add(normalized)
-        try:
-            return raw.decode(encoding).strip()
-        except UnicodeDecodeError:
-            continue
-    return raw.decode("utf-8", errors="replace").strip()
 
 
 def run(
@@ -94,11 +53,11 @@ def run(
     result = subprocess.run(
         list(cmd),
         cwd=str(cwd) if cwd else None,
-        text=False,
+        text=True,
         capture_output=capture_output,
     )
-    stdout = decode_output(result.stdout)
-    stderr = decode_output(result.stderr)
+    stdout = result.stdout.strip() if result.stdout else ""
+    stderr = result.stderr.strip() if result.stderr else ""
     if check and result.returncode != 0:
         pretty_cmd = " ".join(cmd)
         raise CommandError(f"Command failed ({result.returncode}): {pretty_cmd}\n{stderr}")
@@ -122,10 +81,133 @@ def normalize_text(value: str, default_value: str = "미기재") -> str:
     return trimmed if trimmed else default_value
 
 
+def has_visible_value(value: str) -> bool:
+    candidate = value.replace("\\n", "\n").strip()
+    return bool(candidate) and candidate != "미기재"
+
+
+def optional_section(header: str, body: str) -> str:
+    normalized_body = normalize_text(body, "")
+    if not has_visible_value(normalized_body):
+        return ""
+    return f"## {header}\n\n{normalized_body}"
+
+
 def sanitize_frontmatter_value(value: str) -> str:
     one_line = " ".join(value.splitlines()).strip()
     escaped = one_line.replace("\\", "\\\\").replace('"', '\\"')
     return escaped
+
+
+def is_http_url(value: str) -> bool:
+    return bool(re.match(r"^https?://", value.strip(), flags=re.IGNORECASE))
+
+
+def as_optional_url(value: str) -> Optional[str]:
+    candidate = value.strip()
+    if not candidate:
+        return None
+    return candidate if is_http_url(candidate) else None
+
+
+def normalize_submitted_at(value: str) -> str:
+    candidate = value.strip()
+    if candidate:
+        return candidate
+    return dt.datetime.now(KST).replace(microsecond=0).isoformat()
+
+
+def create_team_submission_doc(
+    repo_root: Path,
+    *,
+    team_slug: str,
+    project_slug: str,
+    team_name: str,
+    project_name: str,
+    one_liner: str,
+    problem_definition: str,
+    team_roles: str,
+    repo_url: str,
+    demo_url_or_run_method: str,
+    project_url: str,
+    team_role_label: str,
+    team_bio: str,
+    team_image_url: str,
+    submitted_at: str,
+    team_order: Optional[int],
+    update_existing: bool,
+) -> Path:
+    team_root = repo_root / "contents" / "team"
+    team_file = team_root / f"{TEAM_SUBMISSION_FILE_PREFIX}-{team_slug}-{project_slug}.mdx"
+
+    if team_file.exists() and not update_existing:
+        raise FileExistsError(
+            f"Team submission card already exists at {team_file}. Re-run with --update to overwrite."
+        )
+
+    normalized_name = normalize_text(team_name)
+    normalized_project_name = normalize_text(project_name)
+    normalized_one_liner = normalize_text(one_liner)
+    normalized_problem = normalize_text(problem_definition)
+    normalized_roles = normalize_text(team_roles)
+    normalized_role_label = normalize_text(team_role_label, "참가팀")
+    normalized_bio = normalize_text(team_bio, normalized_one_liner)
+
+    repository_url = as_optional_url(repo_url)
+    if not repository_url:
+        raise ValueError("--repo-url must be a valid http(s) URL.")
+
+    normalized_project_url = as_optional_url(project_url)
+    normalized_demo_url = as_optional_url(demo_url_or_run_method)
+    if not normalized_project_url:
+        normalized_project_url = normalized_demo_url
+
+    normalized_image_url = as_optional_url(team_image_url)
+    normalized_submitted_at = normalize_submitted_at(submitted_at)
+
+    frontmatter_lines = [
+        "---",
+        f'name: "{sanitize_frontmatter_value(normalized_name)}"',
+        f'role: "{sanitize_frontmatter_value(normalized_role_label)}"',
+        f'bio: "{sanitize_frontmatter_value(normalized_bio)}"',
+        f'projectName: "{sanitize_frontmatter_value(normalized_project_name)}"',
+        f'projectSummary: "{sanitize_frontmatter_value(normalized_one_liner)}"',
+        f'repositoryUrl: "{sanitize_frontmatter_value(repository_url)}"',
+        f'submittedAt: "{sanitize_frontmatter_value(normalized_submitted_at)}"',
+    ]
+
+    if normalized_project_url:
+        frontmatter_lines.append(f'projectUrl: "{sanitize_frontmatter_value(normalized_project_url)}"')
+    if normalized_demo_url:
+        frontmatter_lines.append(f'demoUrl: "{sanitize_frontmatter_value(normalized_demo_url)}"')
+    if normalized_image_url:
+        frontmatter_lines.append(f'imageUrl: "{sanitize_frontmatter_value(normalized_image_url)}"')
+    if team_order is not None:
+        frontmatter_lines.append(f"order: {team_order}")
+
+    frontmatter_lines.extend(["---", ""])
+
+    body = "\n".join(
+        [
+            "## 팀 소개",
+            "",
+            normalized_bio,
+            "",
+            "## 제출 프로젝트",
+            "",
+            f"### {normalized_project_name}",
+            "",
+            f"- 한 줄 소개: {normalized_one_liner}",
+            f"- 해결하려는 문제: {normalized_problem}",
+            "- 팀 구성:",
+            normalized_roles,
+            "",
+        ]
+    )
+
+    team_file.parent.mkdir(parents=True, exist_ok=True)
+    team_file.write_text("\n".join(frontmatter_lines) + body, encoding="utf-8")
+    return team_file
 
 
 def load_template(skill_root: Path) -> str:
@@ -151,6 +233,11 @@ def render_template(template: str, replacements: Dict[str, str]) -> str:
         joined = ", ".join(leftovers)
         raise ValueError(f"Unresolved template placeholder(s): {joined}")
     return rendered
+
+
+def normalize_markdown_spacing(content: str) -> str:
+    collapsed = re.sub(r"\n{3,}", "\n\n", content.strip())
+    return f"{collapsed}\n"
 
 
 def parse_frontmatter(content: str) -> Dict[str, str]:
@@ -215,397 +302,12 @@ def ensure_meta_page(meta_path: Path, title: str, page: str) -> None:
     write_json(meta_path, payload)
 
 
-def create_assets(doc_dir: Path) -> None:
-    assets_root = doc_dir / "assets"
+def create_assets(docs_root: Path, *, project_slug: str) -> None:
+    assets_root = docs_root / "vibe-coding" / "assets" / project_slug
     for folder, content in ASSET_READMES.items():
         readme_path = assets_root / folder / "README.md"
         readme_path.parent.mkdir(parents=True, exist_ok=True)
         readme_path.write_text(content, encoding="utf-8")
-
-
-def clean_cli_value(value: Optional[str]) -> str:
-    return value.strip() if isinstance(value, str) else ""
-
-
-def preview_value(value: str, *, limit: int = 120) -> str:
-    compact = value.replace("\n", "\\n")
-    if len(compact) <= limit:
-        return compact
-    return f"{compact[: limit - 3]}..."
-
-
-def normalize_heading(text: str) -> str:
-    return re.sub(r"[^0-9a-z가-힣]+", "", text.lower())
-
-
-def read_text_if_exists(path: Path) -> str:
-    if not path.exists():
-        return ""
-    try:
-        return path.read_text(encoding="utf-8")
-    except UnicodeDecodeError:
-        return path.read_text(encoding="utf-8", errors="replace")
-
-
-def load_project_readme(project_root: Path) -> str:
-    for filename in ("README.md", "readme.md", "README.MD"):
-        content = read_text_if_exists(project_root / filename)
-        if content:
-            return content
-    return ""
-
-
-def load_project_package_json(project_root: Path) -> Dict[str, object]:
-    package_json = project_root / "package.json"
-    if not package_json.exists():
-        return {}
-    try:
-        payload = json.loads(package_json.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
-    return payload if isinstance(payload, dict) else {}
-
-
-def split_markdown_sections(markdown: str) -> Dict[str, str]:
-    sections: Dict[str, str] = {}
-    heading = ""
-    body: List[str] = []
-    for line in markdown.splitlines():
-        match = re.match(r"^\s{0,3}#{1,6}\s+(.+?)\s*$", line)
-        if match:
-            if heading:
-                sections[heading] = "\n".join(body).strip()
-            heading = match.group(1).strip()
-            body = []
-            continue
-        if heading:
-            body.append(line)
-    if heading:
-        sections[heading] = "\n".join(body).strip()
-    return sections
-
-
-def extract_first_paragraph(markdown: str) -> str:
-    in_code_block = False
-    paragraph: List[str] = []
-    for line in markdown.splitlines():
-        stripped = line.strip()
-        if stripped.startswith("```"):
-            in_code_block = not in_code_block
-            continue
-        if in_code_block:
-            continue
-        if not stripped:
-            if paragraph:
-                break
-            continue
-        if stripped.startswith("#"):
-            if paragraph:
-                break
-            continue
-        if stripped.startswith("|"):
-            if paragraph:
-                break
-            continue
-        if (stripped.startswith("- ") or stripped.startswith("* ") or re.match(r"^\d+\.\s+", stripped)) and not paragraph:
-            continue
-        paragraph.append(stripped)
-        if len(" ".join(paragraph)) >= 220:
-            break
-    return " ".join(paragraph).strip()
-
-
-def select_section(markdown: str, heading_keywords: Sequence[str]) -> str:
-    if not markdown:
-        return ""
-    sections = split_markdown_sections(markdown)
-    normalized_keywords = [normalize_heading(keyword) for keyword in heading_keywords]
-    for heading, body in sections.items():
-        normalized_heading = normalize_heading(heading)
-        if any(keyword in normalized_heading for keyword in normalized_keywords):
-            return body.strip()
-    return ""
-
-
-def extract_bullet_lines(markdown: str, *, limit: int = 8) -> str:
-    bullets: List[str] = []
-    for line in markdown.splitlines():
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if stripped.startswith("- "):
-            bullets.append(stripped)
-        elif stripped.startswith("* "):
-            bullets.append(f"- {stripped[2:].strip()}")
-        else:
-            numbered = re.match(r"^(\d+)\.\s+(.+)$", stripped)
-            if numbered:
-                bullets.append(f"- {numbered.group(2).strip()}")
-        if len(bullets) >= limit:
-            break
-    return "\n".join(bullets)
-
-
-def normalize_repo_url(url: str) -> str:
-    value = url.strip()
-    if not value:
-        return ""
-    if value.startswith("git@github.com:"):
-        path = value.split(":", 1)[1]
-        if path.endswith(".git"):
-            path = path[:-4]
-        return f"https://github.com/{path}"
-    if value.startswith("ssh://git@github.com/"):
-        path = value.split("ssh://git@github.com/", 1)[1]
-        if path.endswith(".git"):
-            path = path[:-4]
-        return f"https://github.com/{path}"
-    github_http = re.match(r"^https?://github\.com/(.+)$", value)
-    if github_http:
-        path = github_http.group(1).strip("/")
-        if path.endswith(".git"):
-            path = path[:-4]
-        return f"https://github.com/{path}"
-    return value
-
-
-def infer_repo_url(project_root: Path) -> str:
-    origin = run(
-        ["git", "-C", str(project_root), "remote", "get-url", "origin"],
-        check=False,
-    )
-    return normalize_repo_url(origin)
-
-
-def infer_project_name(project_root: Path, repo_url: str, package_json: Dict[str, object]) -> str:
-    package_name = package_json.get("name")
-    if isinstance(package_name, str) and package_name.strip():
-        normalized_name = package_name.strip()
-        if normalized_name.startswith("@") and "/" in normalized_name:
-            normalized_name = normalized_name.split("/", 1)[1]
-        return normalized_name
-
-    github_match = re.match(r"^https?://github\.com/[^/]+/([^/]+)$", repo_url.strip("/"))
-    if github_match:
-        return github_match.group(1)
-    return project_root.name
-
-
-def infer_demo_url_or_run_method(
-    project_root: Path,
-    readme_text: str,
-    package_json: Dict[str, object],
-) -> str:
-    markdown_links = re.findall(r"\[[^\]]+\]\((https?://[^)\s]+)\)", readme_text)
-    plain_urls = re.findall(r"https?://[^\s<>\"]+", readme_text)
-    urls: List[str] = []
-    for raw in [*markdown_links, *plain_urls]:
-        candidate = raw.rstrip(").,]>\"'")
-        if "](" in candidate:
-            candidate = candidate.split("](", 1)[-1]
-        if candidate and candidate not in urls:
-            urls.append(candidate)
-    for keyword in PRIORITY_DEMO_URL_KEYWORDS:
-        for url in urls:
-            if keyword in url.lower():
-                return url
-    if urls:
-        return urls[0]
-
-    scripts = package_json.get("scripts")
-    if isinstance(scripts, dict):
-        script_name = ""
-        for candidate in ("dev", "start", "serve"):
-            if isinstance(scripts.get(candidate), str) and scripts.get(candidate):
-                script_name = candidate
-                break
-        if script_name:
-            if (project_root / "pnpm-lock.yaml").exists():
-                return f"pnpm install && pnpm run {script_name}"
-            if (project_root / "yarn.lock").exists():
-                return f"yarn install && yarn {script_name}"
-            return f"npm install && npm run {script_name}"
-
-    if readme_text:
-        return "README 실행 방법 참고"
-    return ""
-
-
-def infer_problem_definition(readme_text: str) -> str:
-    section = select_section(readme_text, ("문제 정의", "문제", "problem", "pain", "배경"))
-    if section:
-        paragraph = extract_first_paragraph(section)
-        if paragraph:
-            return paragraph
-    inline = re.search(r"(문제\s*정의|problem)\s*[:：]\s*(.+)", readme_text, flags=re.IGNORECASE)
-    if inline:
-        return inline.group(2).strip()
-    return ""
-
-
-def infer_one_liner(readme_text: str, package_json: Dict[str, object], project_name: str) -> str:
-    description = package_json.get("description")
-    if isinstance(description, str) and description.strip():
-        return description.strip()
-
-    paragraph = extract_first_paragraph(readme_text)
-    if paragraph:
-        sentence = re.split(r"(?<=[.!?])\s+", paragraph, maxsplit=1)[0].strip()
-        return sentence if sentence else paragraph
-    if project_name:
-        return f"{project_name} 프로젝트입니다."
-    return ""
-
-
-def infer_team_name(readme_text: str, repo_url: str) -> str:
-    team_match = re.search(r"(팀명|team\s*name)\s*[:：]\s*(.+)", readme_text, flags=re.IGNORECASE)
-    if team_match:
-        return team_match.group(2).strip()
-
-    owner_match = re.match(r"^https?://github\.com/([^/]+)/[^/]+$", repo_url.strip("/"))
-    if owner_match:
-        return owner_match.group(1)
-    return ""
-
-
-def infer_team_roles(project_root: Path, readme_text: str) -> str:
-    section = select_section(
-        readme_text,
-        ("팀 소개 및 역할", "팀 소개", "팀 역할", "팀원", "구성원", "roles", "members", "team"),
-    )
-    bullets = extract_bullet_lines(section)
-    if bullets:
-        return bullets
-
-    if section:
-        lines: List[str] = []
-        for raw_line in section.splitlines():
-            stripped = raw_line.strip("-* ").strip()
-            if ":" in stripped and len(stripped) <= 120:
-                lines.append(f"- {stripped}")
-            if len(lines) >= 8:
-                break
-        if lines:
-            return "\n".join(lines)
-
-    user_name = run(
-        ["git", "-C", str(project_root), "config", "--get", "user.name"],
-        check=False,
-    )
-    if user_name:
-        return f"- {user_name}: 개발"
-    return ""
-
-
-def infer_required_inputs(project_root: Path) -> Dict[str, str]:
-    readme_text = load_project_readme(project_root)
-    package_json = load_project_package_json(project_root)
-    repo_url = infer_repo_url(project_root)
-    project_name = infer_project_name(project_root, repo_url, package_json)
-    return {
-        "team_name": infer_team_name(readme_text, repo_url),
-        "project_name": project_name,
-        "repo_url": repo_url,
-        "demo_url_or_run_method": infer_demo_url_or_run_method(project_root, readme_text, package_json),
-        "problem_definition": infer_problem_definition(readme_text),
-        "one_liner": infer_one_liner(readme_text, package_json, project_name),
-        "team_roles": infer_team_roles(project_root, readme_text),
-    }
-
-
-def resolve_project_root(path: str) -> Path:
-    candidate = Path(path).expanduser().resolve()
-    toplevel = run(
-        ["git", "-C", str(candidate), "rev-parse", "--show-toplevel"],
-        check=False,
-    )
-    if toplevel:
-        return Path(toplevel).resolve()
-    return candidate
-
-
-def print_required_summary(values: Dict[str, str], inferred: Dict[str, str]) -> None:
-    print("\n[VERIFY] 제출 필수 입력값 7개 확인")
-    for field, label in REQUIRED_INPUT_FIELDS:
-        value = values.get(field, "")
-        marker = ""
-        if value and inferred.get(field) and value == inferred[field]:
-            marker = " (자동 유추)"
-        print(f"- {label}: {value}{marker}")
-
-
-def prompt_required_inputs(cli_values: Dict[str, str], inferred: Dict[str, str]) -> Dict[str, str]:
-    print("[PROMPT] 제출에 필요한 7개 필수 항목을 확인합니다.")
-    print("[PROMPT] Enter를 누르면 제안값을 사용합니다. team_roles는 \\n 형식으로 입력할 수 있습니다.")
-
-    values = dict(cli_values)
-    while True:
-        for field, label in REQUIRED_INPUT_FIELDS:
-            hint = FIELD_HINTS.get(field, "")
-            default_value = values.get(field) or inferred.get(field, "")
-            inferred_marker = ""
-            if default_value and not values.get(field) and default_value == inferred.get(field, ""):
-                inferred_marker = " (자동 유추)"
-
-            while True:
-                prompt = f"{label}{inferred_marker}"
-                if default_value:
-                    prompt = f"{prompt} [{preview_value(default_value)}]"
-                prompt = f"{prompt}: "
-                if hint:
-                    print(f"[HINT] {hint}")
-                try:
-                    answer = input(prompt).strip()
-                except EOFError as error:
-                    raise RuntimeError("Interactive input was interrupted.") from error
-                resolved = answer or default_value
-                if resolved.strip():
-                    values[field] = resolved.strip()
-                    break
-                print(f"[ERROR] {label}은(는) 필수 항목입니다.")
-
-        print_required_summary(values, inferred)
-        try:
-            confirmation = input("위 정보로 진행할까요? [Y/n]: ").strip().lower()
-        except EOFError as error:
-            raise RuntimeError("Interactive confirmation was interrupted.") from error
-
-        if confirmation in ("", "y", "yes"):
-            return values
-        if confirmation in ("n", "no"):
-            print("[INFO] 필수 항목을 다시 입력합니다.")
-            continue
-        print("[ERROR] y 또는 n으로 입력해 주세요.")
-
-
-def validate_non_interactive_inputs(cli_values: Dict[str, str], inferred: Dict[str, str]) -> Dict[str, str]:
-    missing = [(field, label) for field, label in REQUIRED_INPUT_FIELDS if not cli_values.get(field)]
-    if not missing:
-        return cli_values
-
-    lines = [
-        "Missing required inputs in non-interactive mode.",
-        "Provide all required CLI arguments, or run interactively to verify inferred values.",
-    ]
-    for field, label in missing:
-        inferred_value = inferred.get(field, "")
-        if inferred_value:
-            lines.append(f"- {label}: 추정값 {preview_value(inferred_value)}")
-        else:
-            lines.append(f"- {label}: 추정값 없음")
-    raise ValueError("\n".join(lines))
-
-
-def collect_required_inputs(args: argparse.Namespace, *, project_root: Path) -> Dict[str, str]:
-    inferred = infer_required_inputs(project_root)
-    cli_values = {
-        field: clean_cli_value(getattr(args, field, ""))
-        for field, _ in REQUIRED_INPUT_FIELDS
-    }
-    interactive = not args.non_interactive and sys.stdin.isatty() and sys.stdout.isatty()
-    if interactive:
-        return prompt_required_inputs(cli_values, inferred)
-    return validate_non_interactive_inputs(cli_values, inferred)
 
 
 def create_submission_artifacts(
@@ -627,8 +329,14 @@ def create_submission_artifacts(
     ai_validation_notes: str,
     presentation_url: str,
     extra_links: str,
+    project_url: str,
+    team_role_label: str,
+    team_bio: str,
+    team_image_url: str,
+    submitted_at: str,
+    team_order: Optional[int],
     update_existing: bool,
-) -> Path:
+) -> Tuple[Path, Path]:
     skill_root = Path(__file__).resolve().parents[1]
     template = load_template(skill_root)
 
@@ -643,15 +351,13 @@ def create_submission_artifacts(
         "PROBLEM_DEFINITION",
         "SOLUTION",
         "ONE_LINER",
-        "DEMO_SUMMARY",
         "TEAM_ROLES",
-        "TECH_STACK",
-        "RUN_VERIFY",
-        "LICENSE_SOURCES",
-        "AI_USED",
-        "AI_VALIDATION_NOTES",
-        "PRESENTATION_URL",
-        "EXTRA_LINKS",
+        "DEMO_SUMMARY_SECTION",
+        "TECH_STACK_SECTION",
+        "RUN_VERIFY_SECTION",
+        "LICENSE_SOURCES_SECTION",
+        "PRESENTATION_SECTION",
+        "EXTRA_LINKS_SECTION",
     }
     ensure_required_placeholders(template, required_placeholders)
 
@@ -659,54 +365,65 @@ def create_submission_artifacts(
     project_slug = slugify(project_name)
 
     docs_root = repo_root / "contents" / "docs"
-    doc_dir = docs_root / "vibe-coding" / team_slug / project_slug
-    doc_file = doc_dir / DEFAULT_DOC_FILENAME
+    doc_file = docs_root / "vibe-coding" / f"{project_slug}.mdx"
     if doc_file.exists() and not update_existing:
         raise FileExistsError(
             f"Document already exists at {doc_file}. Re-run with --update to overwrite."
         )
 
     replacements = {
-        "FRONTMATTER_TITLE": sanitize_frontmatter_value(f"{project_name} 결과 문서"),
+        "FRONTMATTER_TITLE": sanitize_frontmatter_value(project_name),
         "FRONTMATTER_SUMMARY": sanitize_frontmatter_value(one_liner),
         "FRONTMATTER_DESCRIPTION": sanitize_frontmatter_value(
-            f"{project_name} 제출 준비 및 제출 요건 충족 결과 문서"
+            f"{project_name} 프로젝트 요약"
         ),
         "TEAM_NAME": normalize_text(team_name),
         "PROJECT_NAME": normalize_text(project_name),
         "REPO_URL": normalize_text(repo_url),
         "DEMO_URL_OR_RUN_METHOD": normalize_text(demo_url_or_run_method),
         "PROBLEM_DEFINITION": normalize_text(problem_definition),
-        "SOLUTION": normalize_text(solution, "해결 방식은 데모 설명 섹션을 참고하세요."),
+        "SOLUTION": normalize_text(solution, "핵심 구현 아이디어와 접근 방식을 정리했습니다."),
         "ONE_LINER": normalize_text(one_liner),
-        "DEMO_SUMMARY": normalize_text(demo_summary, "3분 이내 데모 흐름으로 준비했습니다."),
         "TEAM_ROLES": normalize_text(team_roles),
-        "TECH_STACK": normalize_text(tech_stack, "미기재"),
-        "RUN_VERIFY": normalize_text(run_verify, "README 실행/검증 방법을 참고하세요."),
-        "LICENSE_SOURCES": normalize_text(license_sources, "해당 없음"),
-        "AI_USED": normalize_text(ai_used, "사용함"),
-        "AI_VALIDATION_NOTES": normalize_text(ai_validation_notes, "직접 구현 및 테스트로 검증"),
-        "PRESENTATION_URL": normalize_text(presentation_url, "미기재"),
-        "EXTRA_LINKS": normalize_text(extra_links, "미기재"),
+        "DEMO_SUMMARY_SECTION": optional_section("데모 설명 (3분 이내 기준)", demo_summary),
+        "TECH_STACK_SECTION": optional_section("기술 스택", tech_stack),
+        "RUN_VERIFY_SECTION": optional_section("실행/검증 방법", run_verify),
+        "LICENSE_SOURCES_SECTION": optional_section("라이선스/출처", license_sources),
+        "PRESENTATION_SECTION": optional_section("발표 자료", presentation_url),
+        "EXTRA_LINKS_SECTION": optional_section("추가 링크", extra_links),
     }
 
-    rendered = render_template(template, replacements)
+    rendered = normalize_markdown_spacing(render_template(template, replacements))
     validate_document(rendered)
 
-    doc_dir.mkdir(parents=True, exist_ok=True)
+    doc_file.parent.mkdir(parents=True, exist_ok=True)
     doc_file.write_text(rendered, encoding="utf-8")
-    create_assets(doc_dir)
+    create_assets(docs_root, project_slug=project_slug)
 
     ensure_meta_page(docs_root / "meta.json", "해카톤 문서", "vibe-coding")
-    ensure_meta_page(docs_root / "vibe-coding" / "meta.json", "바이브 코딩 결과", team_slug)
-    ensure_meta_page(docs_root / "vibe-coding" / team_slug / "meta.json", team_name, project_slug)
-    ensure_meta_page(
-        docs_root / "vibe-coding" / team_slug / project_slug / "meta.json",
-        project_name,
-        "vibecoding-result",
+    ensure_meta_page(docs_root / "vibe-coding" / "meta.json", "바이브 코딩 결과", project_slug)
+
+    team_file = create_team_submission_doc(
+        repo_root,
+        team_slug=team_slug,
+        project_slug=project_slug,
+        team_name=team_name,
+        project_name=project_name,
+        one_liner=one_liner,
+        problem_definition=problem_definition,
+        team_roles=team_roles,
+        repo_url=repo_url,
+        demo_url_or_run_method=demo_url_or_run_method,
+        project_url=project_url,
+        team_role_label=team_role_label,
+        team_bio=team_bio,
+        team_image_url=team_image_url,
+        submitted_at=submitted_at,
+        team_order=team_order,
+        update_existing=update_existing,
     )
 
-    return doc_file
+    return doc_file, team_file
 
 
 def ensure_gh_cli_and_auth() -> None:
@@ -763,7 +480,10 @@ def ensure_git_identity(repo_path: Path) -> None:
 
 
 def commit_changes(repo_path: Path, *, team_slug: str, project_slug: str, project_name: str, team_name: str) -> str:
-    run(["git", "add", "contents/docs/meta.json", "contents/docs/vibe-coding"], cwd=repo_path)
+    run(
+        ["git", "add", "contents/docs/meta.json", "contents/docs/vibe-coding", "contents/team"],
+        cwd=repo_path,
+    )
     staged = run(["git", "status", "--short"], cwd=repo_path)
     if not staged:
         raise RuntimeError("No staged changes were found. Nothing to commit.")
@@ -776,8 +496,9 @@ def commit_changes(repo_path: Path, *, team_slug: str, project_slug: str, projec
             "- 해카톤 제출 준비/제출 요건을 단일 결과 문서로 공개하기 위해",
             "",
             "What:",
-            f"- contents/docs/vibe-coding/{team_slug}/{project_slug}/vibecoding-result.mdx 생성",
-            "- 제출용 assets 안내 파일 및 docs meta 네비게이션 갱신",
+            f"- contents/docs/vibe-coding/{project_slug}.mdx 생성",
+            f"- contents/team/{TEAM_SUBMISSION_FILE_PREFIX}-{team_slug}-{project_slug}.mdx 카드 데이터 생성",
+            "- 제출용 assets 안내 파일 및 docs/team meta 데이터 갱신",
             "",
             "Verify:",
             "- create_submission_pr.py frontmatter/섹션 검증 통과",
@@ -868,13 +589,13 @@ def parser() -> argparse.ArgumentParser:
             f"to fixed upstream {DEFAULT_TARGET_REPO_URL}."
         )
     )
-    p.add_argument("--team-name", default="")
-    p.add_argument("--project-name", default="")
-    p.add_argument("--repo-url", default="")
-    p.add_argument("--demo-url-or-run-method", default="")
-    p.add_argument("--problem-definition", default="")
-    p.add_argument("--one-liner", default="")
-    p.add_argument("--team-roles", default="")
+    p.add_argument("--team-name", required=True)
+    p.add_argument("--project-name", required=True)
+    p.add_argument("--repo-url", required=True)
+    p.add_argument("--demo-url-or-run-method", required=True)
+    p.add_argument("--problem-definition", required=True)
+    p.add_argument("--one-liner", required=True)
+    p.add_argument("--team-roles", required=True)
 
     p.add_argument("--solution", default="")
     p.add_argument("--tech-stack", default="")
@@ -885,18 +606,14 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--ai-validation-notes", default="")
     p.add_argument("--presentation-url", default="")
     p.add_argument("--extra-links", default="")
+    p.add_argument("--project-url", default="")
+    p.add_argument("--team-role-label", default="참가팀")
+    p.add_argument("--team-bio", default="")
+    p.add_argument("--team-image-url", default="")
+    p.add_argument("--submitted-at", default="")
+    p.add_argument("--team-order", type=int, default=None)
 
     p.add_argument("--base-branch", default=DEFAULT_BASE_BRANCH)
-    p.add_argument(
-        "--project-root",
-        default=".",
-        help="Local project root used to infer required submission fields.",
-    )
-    p.add_argument(
-        "--non-interactive",
-        action="store_true",
-        help="Disable interactive required-field questions and confirmation.",
-    )
     p.add_argument("--update", action="store_true")
     p.add_argument("--keep-temp", action="store_true")
     p.add_argument(
@@ -936,7 +653,7 @@ def run_github_dry_run(
             branch_name=branch_name,
         )
 
-        created_doc = create_submission_artifacts(
+        created_doc, created_team_card = create_submission_artifacts(
             repo_path,
             team_name=args.team_name,
             project_name=args.project_name,
@@ -954,6 +671,12 @@ def run_github_dry_run(
             ai_validation_notes=args.ai_validation_notes,
             presentation_url=args.presentation_url,
             extra_links=args.extra_links,
+            project_url=args.project_url,
+            team_role_label=args.team_role_label,
+            team_bio=args.team_bio,
+            team_image_url=args.team_image_url,
+            submitted_at=args.submitted_at,
+            team_order=args.team_order,
             update_existing=args.update,
         )
 
@@ -970,6 +693,7 @@ def run_github_dry_run(
         print(f"[OK] Fork repository: https://github.com/{fork_repo}")
         print(f"[OK] Planned branch: {branch_name}")
         print(f"[OK] Rendered document path (temp clone): {created_doc}")
+        print(f"[OK] Rendered team card path (temp clone): {created_team_card}")
         print(f"[OK] Changed files in dry-run: {changed_count}")
         print(f"[OK] Manual compare URL preview: {compare_url}")
         return 0
@@ -992,20 +716,15 @@ def run_github_dry_run(
 def main() -> int:
     args = parser().parse_args()
     target_repo = DEFAULT_TARGET_REPO
-
-    if args.render_only_dir and args.github_dry_run:
-        print("[ERROR] --render-only-dir and --github-dry-run cannot be used together.", file=sys.stderr)
-        return 1
-
     try:
-        project_root = resolve_project_root(args.project_root)
-        required_inputs = collect_required_inputs(args, project_root=project_root)
-        for field, _ in REQUIRED_INPUT_FIELDS:
-            setattr(args, field, required_inputs[field])
         team_slug = slugify(args.team_name)
         project_slug = slugify(args.project_name)
     except Exception as error:
         print(f"[ERROR] {error}", file=sys.stderr)
+        return 1
+
+    if args.render_only_dir and args.github_dry_run:
+        print("[ERROR] --render-only-dir and --github-dry-run cannot be used together.", file=sys.stderr)
         return 1
 
     if args.github_dry_run:
@@ -1019,7 +738,7 @@ def main() -> int:
     if args.render_only_dir:
         try:
             output_root = Path(args.render_only_dir).resolve()
-            created_doc = create_submission_artifacts(
+            created_doc, created_team_card = create_submission_artifacts(
                 output_root,
                 team_name=args.team_name,
                 project_name=args.project_name,
@@ -1037,10 +756,17 @@ def main() -> int:
                 ai_validation_notes=args.ai_validation_notes,
                 presentation_url=args.presentation_url,
                 extra_links=args.extra_links,
+                project_url=args.project_url,
+                team_role_label=args.team_role_label,
+                team_bio=args.team_bio,
+                team_image_url=args.team_image_url,
+                submitted_at=args.submitted_at,
+                team_order=args.team_order,
                 update_existing=args.update,
             )
             print("[OK] Render-only mode completed.")
             print(f"[OK] Document path: {created_doc}")
+            print(f"[OK] Team card path: {created_team_card}")
             return 0
         except Exception as error:
             print(f"[ERROR] {error}", file=sys.stderr)
@@ -1065,7 +791,7 @@ def main() -> int:
         )
         ensure_git_identity(repo_path)
 
-        created_doc = create_submission_artifacts(
+        created_doc, created_team_card = create_submission_artifacts(
             repo_path,
             team_name=args.team_name,
             project_name=args.project_name,
@@ -1083,6 +809,12 @@ def main() -> int:
             ai_validation_notes=args.ai_validation_notes,
             presentation_url=args.presentation_url,
             extra_links=args.extra_links,
+            project_url=args.project_url,
+            team_role_label=args.team_role_label,
+            team_bio=args.team_bio,
+            team_image_url=args.team_image_url,
+            submitted_at=args.submitted_at,
+            team_order=args.team_order,
             update_existing=args.update,
         )
 
@@ -1105,6 +837,7 @@ def main() -> int:
 
         print("[OK] Submission document generated and PR created.")
         print(f"[OK] Document path: {created_doc}")
+        print(f"[OK] Team card path: {created_team_card}")
         print(f"[OK] Commit SHA: {commit_sha}")
         print(f"[OK] Branch: {branch_name}")
         print(f"[OK] PR URL: {pr_url}")
