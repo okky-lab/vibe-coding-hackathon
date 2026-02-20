@@ -469,3 +469,24 @@
 ### 결과
 - 저장소에서 `pnpm dlx shadcn@latest add @gooseui/<name>` 형식의 설치 시도를 수행할 수 있습니다.
 - 레지스트리 설정이 코드베이스에 명시되어 재현 가능한 설치 조건이 확보됩니다.
+
+## ADR-024 GooseUI Footer 레지스트리 404 시 수동 적용 없이 중단
+
+- 상태: 승인
+- 날짜: 2026-02-20
+
+### 배경
+- Footer 적용 단계에서 `Simple Footer`가 레지스트리에 없을 경우 `footer-01`로 재시도하는 정책이 확정되었습니다.
+- 2026-02-20 기준 아래 4개 설치 시도는 모두 shadcn CLI에서 "not found" 오류를 반환했습니다.
+  - `@gooseui/footer-simple` -> `https://gooseui.pro/r/footer-simple.json`
+  - `@gooseui/footer-01` -> `https://gooseui.pro/r/footer-01.json`
+  - `https://gooseui.pro/r/blocks/footer-simple.json`
+  - `https://gooseui.pro/r/blocks/footer-01.json`
+
+### 결정
+- Footer 설치는 4개 경로를 순차 시도하되, 모두 실패하면 수동 코드 복사 없이 작업을 중단합니다.
+- 실패 원인은 저장소 문서(`SPEC.md`, `ADR.md`)에 남기고 커밋 로그로 추적 가능하게 유지합니다.
+
+### 결과
+- GooseUI Footer 컴포넌트가 현재 공개 레지스트리에서 제공되지 않는 상태를 명확히 기록했습니다.
+- 비공식 수동 적용으로 인한 출처 불일치/재현성 저하를 방지했습니다.

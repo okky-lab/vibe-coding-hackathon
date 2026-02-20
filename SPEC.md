@@ -217,6 +217,11 @@
 - `components.json`의 `registries`에는 GooseUI 네임스페이스 `@gooseui`가 포함되어야 합니다.
 - `@gooseui`는 `https://gooseui.pro/r/{name}.json` 경로를 사용해야 합니다.
 
+### FR-026 GooseUI Footer 설치 실패 시 중단 규칙
+- Footer 설치는 `@gooseui/footer-simple`을 1차로 시도하고, 실패 시 `@gooseui/footer-01`을 2차로 시도해야 합니다.
+- 네임스페이스 설치가 모두 실패하면 URL 직접 설치(`https://gooseui.pro/r/blocks/footer-simple.json`, `https://gooseui.pro/r/blocks/footer-01.json`)를 재시도해야 합니다.
+- 위 4개 시도가 모두 실패하면 수동 코드 복사 없이 작업을 중단하고 실패 근거를 문서화해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -275,3 +280,4 @@
 - AC-044: `/llms.txt` 본문은 UTF-8 한글 텍스트가 깨지지 않고 출력되어야 한다.
 - AC-045: `/llms.txt`의 `사전 준비사항` 섹션에는 `필수 준비물`, `사전 권장 준비` 문자열이 포함되지 않아야 한다.
 - AC-046: `components.json`의 `registries`에 `@gooseui: https://gooseui.pro/r/{name}.json` 항목이 존재해야 한다.
+- AC-047: Footer 설치 시도 4건(`@gooseui/footer-simple`, `@gooseui/footer-01`, `.../blocks/footer-simple.json`, `.../blocks/footer-01.json`)이 모두 404로 실패하면 수동 적용 없이 종료되어야 한다.
