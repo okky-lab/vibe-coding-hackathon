@@ -385,3 +385,21 @@
 ### 결과
 - `/team`에서 최신 등록 카드가 상단에 표시되어 운영/검수 동선이 단순해집니다.
 - 기존 카드 스키마를 유지하면서 정렬 기준만 변경해 영향 범위를 최소화합니다.
+
+## ADR-020 팀 카드 클릭을 team 컬렉션 상세 문서 라우트로 고정
+
+- 상태: 승인
+- 날짜: 2026-02-20
+
+### 배경
+- `/team` 카드의 프로젝트 링크는 기존에 `/docs/vibe-coding/<project-slug>`를 추정해 연결했기 때문에 실제 팀 제출 파일 경로와 불일치할 수 있었습니다.
+- 특히 `contents/team/submission-chlrb-test-project.mdx` 같은 제출 카드 파일은 `/team`에서 바로 열람되는 상세 라우트가 없어 클릭 동선이 끊겼습니다.
+
+### 결정
+- `/team` 카드의 이미지/프로젝트명 링크를 `projectName` 추정 slug가 아닌 `team.info.path` 기반 경로(`/team/<submission-doc-slug>`)로 변경합니다.
+- App Router에 `/team/[slug]` 상세 라우트를 추가해 `contents/team` 컬렉션 문서 본문과 TOC를 그대로 렌더링합니다.
+- 상세 페이지 메타데이터는 `projectName`/`projectSummary`를 우선 사용하고, 값이 없을 때 `name`/`bio`를 대체값으로 사용합니다.
+
+### 결과
+- `/team`에서 프로젝트를 클릭하면 해당 팀 제출 파일(`submission-...mdx`)을 직접 렌더링하는 상세 페이지로 안정적으로 이동합니다.
+- 제출 카드 링크가 파일 경로와 1:1 매핑되어 slug 추정 오류가 제거됩니다.

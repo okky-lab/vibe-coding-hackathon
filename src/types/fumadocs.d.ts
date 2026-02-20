@@ -1,3 +1,7 @@
+import type { TOCItemType } from "fumadocs-core/toc";
+import type { Root } from "mdast";
+import type { MDXContent } from "mdx/types";
+
 declare module "fumadocs-mdx:collections/server" {
   import type { Source } from "fumadocs-core/source";
 
@@ -6,8 +10,15 @@ declare module "fumadocs-mdx:collections/server" {
   };
 
   type CollectionDoc<T> = T & {
+    body: MDXContent;
+    toc: TOCItemType[];
+    _exports: Record<string, unknown>;
+    structuredData: unknown;
+    getText: (type: "raw" | "processed") => Promise<string>;
+    getMDAST: () => Promise<Root>;
     info: {
       path: string;
+      fullPath: string;
     };
   };
 
