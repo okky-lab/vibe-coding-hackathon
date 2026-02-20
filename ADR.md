@@ -456,3 +456,16 @@
 ### 결과
 - LLM이 단일 경로(`/llms.txt`)에서 행사 핵심 맥락을 안정적으로 읽을 수 있습니다.
 - 구현 복잡도와 의존성을 낮추는 대신, 문서 변경 시 수동 업데이트 운영 규칙을 명시적으로 관리하게 됩니다.
+
+## ADR-024 shadcn 레지스트리에 GooseUI 네임스페이스 추가
+
+- 저장소는 `components.json`의 `registries`를 통해 shadcn 커스텀 레지스트리를 사용하고 있습니다.
+- Footer 컴포넌트 설치 검증을 위해 GooseUI 패키지 네임스페이스(`@gooseui/...`)를 동일한 방식으로 호출할 수 있어야 했습니다.
+
+### 결정
+- `components.json`의 `registries`에 `@gooseui` 항목을 추가합니다.
+- GooseUI 네임스페이스는 공식 설치 문서 기준 경로 `https://gooseui.pro/r/{name}.json`를 사용합니다.
+
+### 결과
+- 저장소에서 `pnpm dlx shadcn@latest add @gooseui/<name>` 형식의 설치 시도를 수행할 수 있습니다.
+- 레지스트리 설정이 코드베이스에 명시되어 재현 가능한 설치 조건이 확보됩니다.

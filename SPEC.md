@@ -213,6 +213,10 @@
 - `/llms.txt` 본문 내 참조 링크는 절대 URL이어야 하며, 기본 도메인은 `https://vibecoding.okky.kr`이어야 합니다.
 - 운영 문서 변경 시 `/llms.txt` 본문은 수동 동기화 정책을 따른다.
 
+### FR-026 shadcn 커스텀 레지스트리의 GooseUI 네임스페이스 추가
+- `components.json`의 `registries`에는 GooseUI 네임스페이스 `@gooseui`가 포함되어야 합니다.
+- `@gooseui`는 `https://gooseui.pro/r/{name}.json` 경로를 사용해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -270,3 +274,4 @@
 - AC-043: `/llms.txt` 본문에는 `https://vibecoding.okky.kr` 도메인을 사용하는 절대 URL 참조 링크가 포함되어야 한다.
 - AC-044: `/llms.txt` 본문은 UTF-8 한글 텍스트가 깨지지 않고 출력되어야 한다.
 - AC-045: `/llms.txt`의 `사전 준비사항` 섹션에는 `필수 준비물`, `사전 권장 준비` 문자열이 포함되지 않아야 한다.
+- AC-046: `components.json`의 `registries`에 `@gooseui: https://gooseui.pro/r/{name}.json` 항목이 존재해야 한다.
