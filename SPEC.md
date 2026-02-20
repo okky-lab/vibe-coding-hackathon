@@ -82,6 +82,7 @@
 - 팀 카드는 `CardAction` 영역에 배지(`Badge`)를 노출하고, 하단 액션(`CardFooter`)에 단일 메인 버튼(`Button`)을 제공해야 합니다.
 - 팀 카드 하단 액션의 메인 버튼 우측에는 저장소 링크용 GitHub 아이콘 버튼을 제공해야 합니다(`repositoryUrl` 존재 시).
 - 팀 목록 그리드는 `md` 이상 뷰포트에서 3열로 표시되어야 합니다.
+- 팀 목록 정렬은 `submittedAt`(등록 시각) 기준 내림차순이어야 하며, 시각이 없거나 파싱 불가한 항목은 목록 하단에 배치되어야 합니다.
 
 ### FR-010 오픈라우터 설정 문서 요구사항
 - `오픈라우터 설정` 문서(`openrouter-setup`)는 Codex 설정 섹션을 포함해야 합니다.
@@ -157,18 +158,34 @@
 - 문서는 임의 프로젝트 설치 절차로 GitHub installer 명령(`install-skill-from-github.py`)과 `.claude/skills` 복사 단계를 포함해야 합니다.
 - 문서는 설치 후 Codex/Claude/Gemini 재시작 안내를 포함해야 합니다.
 
-### FR-017 제출 스킬 필수 입력 질의/자동 유추 검증
-- `hackathon-submission` 스킬은 제출 자동화 실행 전에 아래 7개 필수 항목을 사용자에게 질의하고 응답을 받아야 합니다.
-  - 팀명
-  - 프로젝트명
-  - GitHub 저장소 URL (Public)
-  - 데모 URL 또는 실행 방법
-  - 문제 정의
-  - 한 줄 소개
-  - 팀 소개 및 역할
-- 스킬은 프로젝트 컨텍스트(예: README, package metadata, git remote)에서 유추 가능한 항목을 자동 제안해야 합니다.
-- 자동 제안값은 사용자 확인(확정/수정)을 거친 뒤에만 제출 생성 단계로 진행해야 합니다.
-- 비대화형(`non-interactive`) 실행에서 필수값이 누락되면 생성을 중단하고, 누락 항목과 유추값(존재 시)을 오류 메시지로 안내해야 합니다.
+### FR-017 문서 컬렉션의 증빙 자산 디렉터리 제외
+- 문서 수집 설정(`source.config.ts`)의 `docs` 컬렉션은 `contents/docs` 하위의 `assets` 디렉터리를 페이지 수집 대상에서 제외해야 합니다.
+- 제외 대상에는 참가자 증빙용 파일의 안내 문서(`assets/**/README.md`)가 포함되어야 합니다.
+- `assets` 하위 마크다운 파일은 문서 페이지 schema(`title` 필수)의 검증 대상이 아니어야 합니다.
+
+### FR-018 팀 페이지 내 바이브 코딩 결과 카드 통합
+- `/team` 경로는 `contents/team` 기반의 단일 카드 목록으로 팀/제출 프로젝트를 표시해야 합니다.
+- 바이브 코딩 제출 결과도 기존 팀 프로젝트 카드와 동일한 카드 형식으로 같은 목록에 포함되어야 합니다.
+- 바이브 코딩 제출 카드는 `contents/team/submission-<team-slug>-<project-slug>.mdx` 데이터를 통해 렌더링되어야 합니다.
+- `/vibe-coding` 경로는 독립 카드 목록을 렌더링하지 않고 `/team`으로 연결되어야 합니다.
+
+### FR-019 제출 결과 문서 템플릿 간소화
+- `hackathon-submission` 스킬이 생성하는 `vibecoding-result.mdx`의 frontmatter `title`에는 `결과 문서` 표현을 포함하지 않아야 합니다.
+- `hackathon-submission` 스킬이 생성하는 `vibecoding-result.mdx`의 frontmatter `description`에는 `제출 준비 및 제출 요건 충족 결과 문서` 고정 문구를 사용하지 않아야 합니다.
+- `발표 자료`, `추가 링크` 등 선택 섹션은 값이 비어있거나 `미기재`인 경우 문서에 렌더링하지 않아야 합니다.
+- `vibecoding-result.mdx` 본문에는 `제출 체크리스트` 섹션을 렌더링하지 않아야 합니다.
+- `vibecoding-result.mdx` 본문에는 `AI 사용 여부 및 검증 방식` 섹션을 사용자 노출 목적의 결과 문서에서 렌더링하지 않아야 합니다.
+
+### FR-020 docs 사이드바의 바이브 코딩 구간 시각적 분리
+- `/docs` 좌측 사이드바에서 `바이브 코딩 결과` 항목 바로 위에 구분선(`separator`)이 표시되어야 합니다.
+- 해당 구분선 바로 아래에는 `/team`으로 이동하는 `바이브 코딩 목록` 메뉴 항목이 표시되어야 합니다.
+- `바이브 코딩 목록` 메뉴는 내부 링크(`/team`)로 동작해야 합니다.
+
+### FR-021 바이브 코딩 결과 문서 경로 단일 레벨화
+- `contents/docs/vibe-coding` 하위 결과 문서는 팀/프로젝트 중첩 경로 없이 `/<project-slug>.mdx` 단일 레벨로 생성되어야 합니다.
+- 제출 결과 자산 경로는 `contents/docs/vibe-coding/assets/<project-slug>/{demo,evidence,team}` 구조를 사용해야 합니다.
+- `hackathon-submission` 스킬은 위 단일 레벨 문서/자산 경로를 기본 출력 규약으로 사용해야 합니다.
+- `contents/docs/vibe-coding/meta.json`의 `pages`에는 팀 슬러그가 아닌 프로젝트 슬러그가 직접 등록되어야 합니다.
 
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
@@ -204,6 +221,16 @@
 - AC-020: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 Codex/Gemini/Claude의 자동 발견 경로 3개가 모두 명시되어야 합니다.
 - AC-021: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 `skills/hackathon-submission`을 `.agents/skills`, `.claude/skills`로 복사하는 설치 명령이 포함되어야 합니다.
 - AC-022: `/docs/how-to-participate`의 `5.1 스킬 설치 (1회)`에는 GitHub installer 기반 설치 명령(`--url .../skills/hackathon-submission`, `--dest .agents/skills`)과 `.claude/skills` 복사 및 재시작 안내가 포함되어야 합니다.
-- AC-023: `create_submission_pr.py`를 대화형 TTY에서 필수 인자 없이 실행하면, 7개 필수 항목 질의 프롬프트가 표시되고 최종 확인 입력을 요구해야 합니다.
-- AC-024: `create_submission_pr.py --non-interactive` 실행 시 필수 인자가 하나라도 누락되면 종료 코드 1로 실패하고 누락 항목 목록을 출력해야 합니다.
-- AC-025: 자동 유추 가능한 값(`project_name`, `repo_url` 등)은 대화형 프롬프트의 기본값으로 제시되어야 하며, 사용자 확인 후 최종 입력값으로 확정되어야 합니다.
+- AC-023: `contents/docs/**/assets/**` 하위의 `README.md`가 frontmatter 없이 존재해도 `pnpm build`는 docs schema 오류 없이 완료되어야 합니다.
+- AC-024: `/team`에 접속하면 `contents/team` 단일 카드 목록에서 일반 팀 카드와 제출 결과 카드가 동일한 카드 형식으로 함께 표시되어야 합니다.
+- AC-025: `/vibe-coding`에 접속하면 독립 카드 목록 대신 `/team`으로 이동되어야 합니다.
+- AC-026: `hackathon-submission` 스킬로 생성된 결과 문서의 `title`에는 `"결과 문서"` 문자열이 포함되지 않아야 한다.
+- AC-027: `hackathon-submission` 스킬로 생성된 결과 문서에는 값이 `미기재`인 선택 섹션(예: `발표 자료`, `추가 링크`)이 노출되지 않아야 한다.
+- AC-028: `hackathon-submission` 스킬로 생성된 결과 문서에는 `제출 체크리스트` 섹션이 포함되지 않아야 한다.
+- AC-029: `hackathon-submission` 스킬로 생성된 결과 문서에는 `AI 사용 여부 및 검증 방식` 섹션이 포함되지 않아야 한다.
+- AC-030: `/docs/vibe-coding`를 포함한 docs 사이드바에서 `바이브 코딩 결과` 항목 바로 위에 구분선이 보여야 한다.
+- AC-031: 구분선 아래에 `바이브 코딩 목록` 메뉴가 추가되어 `/team`으로 이동해야 한다.
+- AC-032: `hackathon-submission` 스킬 실행 시 `contents/team/submission-<team-slug>-<project-slug>.mdx` 파일이 생성되어 `/team` 카드 목록에 바로 반영되어야 한다.
+- AC-033: `hackathon-submission` 스킬 실행 시 결과 문서는 `contents/docs/vibe-coding/<project-slug>.mdx` 경로로 생성되어야 하며 팀/프로젝트 중첩 디렉터리를 만들지 않아야 한다.
+- AC-034: `hackathon-submission` 스킬 실행 시 자산은 `contents/docs/vibe-coding/assets/<project-slug>/demo|evidence|team/README.md`로 생성되어야 하고, `contents/docs/vibe-coding/meta.json`에는 `<project-slug>`가 등록되어야 한다.
+- AC-035: `/team` 카드 목록은 `submittedAt`이 최신인 항목부터 표시되어야 하며, `submittedAt`이 없거나 파싱 불가한 항목은 마지막 구간에 표시되어야 한다.

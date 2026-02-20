@@ -39,7 +39,9 @@ export const docs = defineDocs({
   dir: "contents/docs",
   docs: {
     async: true,
-    files: ["**/*.{md,mdx}"],
+    // Participant evidence assets can include plain README files without frontmatter.
+    // Exclude them from the docs page collection to avoid schema validation failures.
+    files: ["**/*.{md,mdx}", "!**/assets/**"],
     schema: docsPageSchema,
   },
   meta: {

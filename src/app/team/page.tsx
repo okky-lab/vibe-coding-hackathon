@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { docsSource } from "@/lib/docs-source";
 import { submittedTeams } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -13,7 +14,30 @@ export const metadata: Metadata = {
   description: "해커톤 참가팀과 제출 프로젝트 정보를 확인할 수 있습니다.",
 };
 
-function getPrimaryLink(team: (typeof submittedTeams)[number]) {
+type TeamCard = (typeof submittedTeams)[number];
+
+function slugifyProjectName(value: string) {
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, "-")
+    .replace(/[^\p{L}\p{N}-]+/gu, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return normalized;
+}
+
+function getResultDocLink(team: TeamCard, availableDocUrls: Set<string>) {
+  if (!team.projectName) return null;
+  const projectSlug = slugifyProjectName(team.projectName);
+  if (!projectSlug) return null;
+
+  const resultDocUrl = `/docs/vibe-coding/${projectSlug}`;
+  return availableDocUrls.has(resultDocUrl) ? resultDocUrl : null;
+}
+
+function getPrimaryLink(team: TeamCard) {
   if (team.projectUrl) return { href: team.projectUrl, label: "프로젝트 보기" };
   if (team.demoUrl) return { href: team.demoUrl, label: "데모 보기" };
   if (team.repositoryUrl) return { href: team.repositoryUrl, label: "저장소 보기" };
@@ -37,6 +61,13 @@ function formatSubmittedAt(value?: string) {
 }
 
 export default function TeamsPage() {
+  const availableDocUrls = new Set(
+    docsSource
+      .getPages()
+      .map((page) => page.url)
+      .filter((url) => url.startsWith("/docs/vibe-coding/")),
+  );
+
   return (
     <main className="[grid-area:main] w-full px-4 pb-20 pt-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14">
       <div className="mx-auto w-full max-w-[1100px]">
@@ -50,24 +81,47 @@ export default function TeamsPage() {
         <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           {submittedTeams.map((team) => {
             const primaryLink = getPrimaryLink(team);
+            const resultDocLink = getResultDocLink(team, availableDocUrls);
+            const projectTitle = team.projectName ?? "프로젝트 미기재";
 
             return (
               <Card key={team.info.path} className="relative mx-auto w-full max-w-sm overflow-hidden pt-0">
-                <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-                <div className="relative z-20 aspect-video w-full overflow-hidden">
-                  {team.imageUrl ? (
-                    <Image
-                      src={team.imageUrl}
-                      alt={`${team.name} 대표 이미지`}
-                      width={1280}
-                      height={720}
-                      className="aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 384px"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-linear-to-br from-zinc-700 via-zinc-600 to-zinc-500 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-700" />
-                  )}
-                </div>
+                <div className="pointer-events-none absolute inset-0 z-30 aspect-video bg-black/35" />
+                {resultDocLink ? (
+                  <Link
+                    href={resultDocLink}
+                    aria-label={`${projectTitle} 결과 문서 보기`}
+                    className="relative z-20 block aspect-video w-full overflow-hidden"
+                  >
+                    {team.imageUrl ? (
+                      <Image
+                        src={team.imageUrl}
+                        alt={`${team.name} 대표 이미지`}
+                        width={1280}
+                        height={720}
+                        className="aspect-video w-full object-cover brightness-60 grayscale transition-transform duration-200 hover:scale-[1.02] dark:brightness-40"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 384px"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-linear-to-br from-zinc-700 via-zinc-600 to-zinc-500 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-700" />
+                    )}
+                  </Link>
+                ) : (
+                  <div className="relative z-20 aspect-video w-full overflow-hidden">
+                    {team.imageUrl ? (
+                      <Image
+                        src={team.imageUrl}
+                        alt={`${team.name} 대표 이미지`}
+                        width={1280}
+                        height={720}
+                        className="aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 384px"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-linear-to-br from-zinc-700 via-zinc-600 to-zinc-500 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-700" />
+                    )}
+                  </div>
+                )}
                 <CardHeader className="relative z-40">
                   <CardAction className="flex items-center gap-2">
                     <Badge variant={team.order === 1 ? "default" : "secondary"}>
@@ -77,7 +131,15 @@ export default function TeamsPage() {
                       {team.role}
                     </Badge>
                   </CardAction>
-                  <CardTitle className="text-balance text-lg sm:text-xl">{team.projectName ?? "프로젝트 미기재"}</CardTitle>
+                  <CardTitle className="text-balance text-lg sm:text-xl">
+                    {resultDocLink ? (
+                      <Link href={resultDocLink} className="transition-colors hover:text-primary">
+                        {projectTitle}
+                      </Link>
+                    ) : (
+                      projectTitle
+                    )}
+                  </CardTitle>
                   <CardDescription className="space-y-1">
                     <p className="font-medium text-foreground">{team.name}</p>
                     <p className="line-clamp-2">{team.projectSummary ?? team.bio}</p>
