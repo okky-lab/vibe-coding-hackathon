@@ -197,6 +197,10 @@
 - 상단 GNB의 `FAQ` 메뉴는 `href="/docs/faq"` 경로로 이동해야 합니다.
 - 상단 GNB의 `FAQ` 메뉴는 레거시 FAQ 경로(`/faq`)를 직접 가리키지 않아야 합니다.
 
+### FR-024 운영 메인 브랜치의 테스트 제출 데이터 비노출
+- 운영 메인 브랜치의 `contents/team` 목록에는 검증 목적의 테스트 제출 샘플(`submission-chlrb-test-project`)이 포함되지 않아야 합니다.
+- `/team` 페이지는 실제 제출/팀 데이터만 표시해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -244,7 +248,8 @@
 - AC-033: `hackathon-submission` 스킬 실행 시 결과 문서는 `contents/docs/vibe-coding/<project-slug>.mdx` 경로로 생성되어야 하며 팀/프로젝트 중첩 디렉터리를 만들지 않아야 한다.
 - AC-034: `hackathon-submission` 스킬 실행 시 자산은 `contents/docs/vibe-coding/assets/<project-slug>/demo|evidence|team/README.md`로 생성되어야 하고, `contents/docs/vibe-coding/meta.json`에는 `<project-slug>`가 등록되어야 한다.
 - AC-035: `/team` 카드 목록은 `submittedAt`이 최신인 항목부터 표시되어야 하며, `submittedAt`이 없거나 파싱 불가한 항목은 마지막 구간에 표시되어야 한다.
-- AC-036: `/team`에서 `test-project` 카드의 이미지 또는 프로젝트명을 클릭하면 `/team/submission-chlrb-test-project`로 이동해야 한다.
-- AC-037: `/team/submission-chlrb-test-project` 페이지에는 `contents/team/submission-chlrb-test-project.mdx` 본문과 TOC가 렌더링되어야 한다.
+- AC-036: `/team`에서 제출 카드의 이미지 또는 프로젝트명을 클릭하면 해당 카드의 slug 경로(`/team/<submission-doc-slug>`)로 이동해야 한다.
+- AC-037: `/team/<submission-doc-slug>` 페이지에는 대응되는 `contents/team/*.mdx` 본문과 TOC가 렌더링되어야 한다.
 - AC-038: `/team/<submission-doc-slug>` 메타데이터는 제목(`projectName` 우선)과 설명(`projectSummary` 우선)을 노출해야 한다.
 - AC-039: 상단 GNB에서 `FAQ` 메뉴 클릭 시 사용자는 `/docs/faq` 문서 페이지로 이동해야 한다.
+- AC-040: 운영 메인 브랜치의 `contents/team`에는 `submission-chlrb-test-project.mdx`가 존재하지 않아야 하며, `/team` 목록에 `test-project` 카드가 노출되지 않아야 한다.
