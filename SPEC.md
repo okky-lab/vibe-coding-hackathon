@@ -238,6 +238,10 @@
 - 각 로고/카드는 해당 회사 홈페이지로 이동하는 외부 링크를 제공해야 합니다.
 - 랜딩 페이지 중앙 CTA 하단에는 Sponsor 섹션이 노출되지 않아야 합니다.
 
+### FR-030 팀 소개 페이지의 공통 헤더/푸터 제공
+- `/team`과 `/team/<submission-doc-slug>` 페이지는 사이트 공통 헤더와 푸터를 포함해야 합니다.
+- 팀 소개 페이지 구간도 `HomeLayout` 기반 내비게이션과 `SiteFooter`를 동일하게 사용해야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -304,3 +308,4 @@
 - AC-052: `/sponsor` 페이지에서 eBrain, PopupStudio 로고와 간략한 회사 소개 텍스트를 확인할 수 있어야 한다.
 - AC-053: `/sponsor` 페이지의 로고/카드 클릭 시 각각 `https://ebrain.kr/`, `https://popupstudio.ai/` 새 탭으로 이동해야 한다.
 - AC-054: 랜딩 페이지 CTA(`Get Started`, `GitHub`) 하단에는 Sponsor 섹션이 노출되지 않아야 한다.
+- AC-055: `/team`과 `/team/<submission-doc-slug>`에 접속하면 상단 헤더 내비게이션과 하단 푸터가 함께 렌더링되어야 한다.
