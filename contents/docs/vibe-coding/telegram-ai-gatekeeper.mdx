@@ -1,0 +1,51 @@
+---
+title: "Telegram AI Gatekeeper"
+summary: "AI 에이전트 실행을 통제하는 3-Tier 리스크 거버넌스 시스템 (ALLOW/HOLD/HALT)"
+description: "Telegram AI Gatekeeper 프로젝트 요약"
+---
+
+## 프로젝트/팀 기본정보
+
+- 팀명: 허은구
+- 프로젝트명: Telegram AI Gatekeeper
+- GitHub 저장소: https://github.com/Nick-heo-eg/telegram-firewall-hackathon-2026
+
+## 제품 링크 또는 실행 방법
+
+README.md 참고 (5분 재현 가이드 포함)
+
+## 문제 정의 (Problem)
+
+AI 에이전트는 위험한 명령을 실행 전 검증 없이 바로 실행하는 문제가 있습니다. 기존 Guardrail은 응답만 필터링할 뿐 실제 실행은 통제하지 못합니다.
+
+## 해결 방식 (Solution)
+
+핵심 구현 아이디어와 접근 방식을 정리했습니다.
+
+## 한 줄 소개
+
+AI 에이전트 실행을 통제하는 3-Tier 리스크 거버넌스 시스템 (ALLOW/HOLD/HALT)
+
+## 데모 설명 (3분 이내 기준)
+
+14개 스크린샷으로 전체 워크플로우 증명 (LOW/MID/HIGH 리스크, 경계값 검증, 실행 증거)
+
+## 팀 소개 및 역할
+
+- 허은구: Full-stack Developer (정책 엔진, 암호화 원장, Telegram Bot 인터페이스)
+
+## 기술 스택
+
+Python 3.10+, python-telegram-bot 20.7, cryptography 42.0.0 (ED25519), Playwright
+
+## 실행/검증 방법
+
+1. 환경변수 설정: export TELEGRAM_TOKEN="your_bot_token"
+2. 의존성 설치: pip install -r requirements.txt
+3. 실행: python3 bot_polling.py
+4. Telegram에서 /finance 명령으로 3-Tier 리스크 테스트
+5. /verify 명령으로 Ledger 무결성 검증
+
+## 라이선스/출처
+
+본 프로젝트는 해커톤을 위해 4시간 내 완전 신규 구현되었으며, Claude Code를 활용하여 개발되었습니다. 모든 코드는 MIT 라이선스 하에 공개됩니다.
