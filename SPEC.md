@@ -256,6 +256,10 @@
 - 운영 메인 브랜치의 바이브 코딩 결과에는 중복 제출 항목(`auragc`, `auragc-adaptivegc` 동시 노출) 중 단독 `auragc` 항목이 포함되지 않아야 합니다.
 - 운영 메인 브랜치의 팀 데이터에는 mock 팀 샘플(`CareFeed`, `Sprint Pilot`)이 포함되지 않아야 합니다.
 
+### FR-033 팀 목록 제출 시각의 KST 고정 표기
+- `/team` 카드의 `submittedAt` 표시는 `Asia/Seoul` 타임존 기준으로 렌더링되어야 합니다.
+- `/team` 카드의 제출 시각 문자열 끝에는 `KST` 표기가 포함되어야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -335,3 +339,4 @@
 - AC-065: `contents/docs/vibe-coding/auragc.mdx`와 `contents/team/submission-team-auragc-auragc.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
 - AC-066: `contents/team/team-lattice-builders.mdx`와 `contents/team/team-wave-labs.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
 - AC-067: `contents/team/*.mdx`의 `projectUrl`, `repositoryUrl`, `demoUrl` 값은 URL 형식을 만족하거나 필드가 생략되어야 한다.
+- AC-068: `/team`의 `제출 시각`은 서버/클라이언트 실행 환경 타임존과 무관하게 KST(`Asia/Seoul`) 기준으로 표시되어야 하며, 문자열에 `KST`가 포함되어야 한다.
