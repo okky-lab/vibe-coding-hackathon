@@ -653,3 +653,20 @@
 ### 결과
 - 운영 목록에서 `AuraGC-AdaptiveGC`만 남고, 중복으로 보이던 `AuraGC` 단독 항목이 제거됩니다.
 - `/team` 및 관련 목록에서 mock 팀 데이터가 제외되어 실제 제출 중심으로 정리됩니다.
+
+## ADR-033 팀 제출 문서의 URL 필드 유효성 정리
+
+- 상태: 승인
+- 날짜: 2026-02-21
+
+### 배경
+- 팀 제출 문서(`contents/team/*.mdx`)는 schema에서 `projectUrl`, `repositoryUrl`, `demoUrl`를 URL 형식으로 검증합니다.
+- `team-seungtae-lee.mdx`의 `demoUrl`에 URL이 아닌 문자열(`직접 시연`)이 들어가 빌드가 실패하면서 최신 데이터 반영이 지연될 수 있었습니다.
+
+### 결정
+- `team-seungtae-lee.mdx`의 `demoUrl` 비-URL 값을 제거합니다.
+- 팀 제출 문서의 URL 필드는 유효한 절대 URL만 사용하고, URL이 없으면 필드를 생략하는 규칙으로 정리합니다.
+
+### 결과
+- MDX 컬렉션 검증 단계에서 URL 형식 오류로 인한 빌드 중단 위험이 줄어듭니다.
+- `/team` 목록과 운영 데이터 변경사항이 배포 파이프라인에서 안정적으로 반영됩니다.

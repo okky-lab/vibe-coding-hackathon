@@ -85,6 +85,7 @@
 - 팀 카드 하단 액션의 메인 버튼 우측에는 저장소 링크용 GitHub 아이콘 버튼을 제공해야 합니다(`repositoryUrl` 존재 시).
 - 팀 목록 그리드는 `md` 이상 뷰포트에서 3열로 표시되어야 합니다.
 - 팀 목록 정렬은 `submittedAt`(등록 시각) 기준 내림차순이어야 하며, 시각이 없거나 파싱 불가한 항목은 목록 하단에 배치되어야 합니다.
+- `projectUrl`, `repositoryUrl`, `demoUrl` 값은 유효한 절대 URL이어야 하며, URL이 아닌 값은 저장하지 않아야 합니다.
 
 ### FR-010 오픈라우터 설정 문서 요구사항
 - `오픈라우터 설정` 문서(`openrouter-setup`)는 Codex 설정 섹션을 포함해야 합니다.
@@ -333,3 +334,4 @@
 - AC-064: `contents/docs/vibe-coding/meta.json`의 `pages`에는 `auragc`가 포함되지 않아야 하며, `auragc-adaptivegc`는 유지되어야 한다.
 - AC-065: `contents/docs/vibe-coding/auragc.mdx`와 `contents/team/submission-team-auragc-auragc.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
 - AC-066: `contents/team/team-lattice-builders.mdx`와 `contents/team/team-wave-labs.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
+- AC-067: `contents/team/*.mdx`의 `projectUrl`, `repositoryUrl`, `demoUrl` 값은 URL 형식을 만족하거나 필드가 생략되어야 한다.
