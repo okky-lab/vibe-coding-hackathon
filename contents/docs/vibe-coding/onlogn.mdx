@@ -1,0 +1,57 @@
+---
+title: "onlogn"
+summary: "실행 기록을 포트폴리오로 바꾸는 공개형 투두 플랫폼"
+description: "onlogn 프로젝트 요약"
+---
+
+## 프로젝트/팀 기본정보
+
+- 팀명: team-devOops
+- 프로젝트명: onlogn
+- GitHub 저장소: https://github.com/team-devOops/onlogn
+
+## 제품 링크 또는 실행 방법
+
+docker compose up -d 후 ./gradlew bootRun --args='--spring.profiles.active=dev --server.port=3000' 실행
+
+## 문제 정의 (Problem)
+
+일상의 할 일/학습/루틴/프로젝트 수행 기록은 흩어져 축적과 공유가 어렵고, 실행의 연속성을 객관적으로 증명하기 어렵다.
+
+## 해결 방식 (Solution)
+
+owner-scoped Task/Group/Reaction API와 공개 프로필 기반 조회를 제공하고, 주간 회고/프로필 요약/태그 추출 AI 기능으로 실행 기록의 의미를 자동 요약한다.
+
+## 한 줄 소개
+
+실행 기록을 포트폴리오로 바꾸는 공개형 투두 플랫폼
+
+## 데모 설명 (3분 이내 기준)
+
+로그인 후 Task/Group 관리, 캘린더 집계, 공개 프로필 공유, AI 주간 회고/프로필 요약을 3분 이내 시연 가능
+
+## 팀 소개 및 역할
+
+- zinzo: Product / Frontend
+- beng9re: Backend / Platform
+
+## 기술 스택
+
+- Spring Boot 4.0.2
+- Java 21
+- Spring Security + JWT
+- Spring Data JPA
+- MySQL/H2
+- AWS Bedrock
+- Thymeleaf
+
+## 실행/검증 방법
+
+- ./gradlew test
+- ./gradlew build -x test
+- ./gradlew bootRun --args='--spring.profiles.active=dev --server.port=0'
+
+## 라이선스/출처
+
+- Spring Boot, Hibernate, AWS SDK 등 OSS 라이브러리 사용
+- 각 라이브러리의 공식 라이선스 정책 준수
