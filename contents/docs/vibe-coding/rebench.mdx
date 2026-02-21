@@ -1,0 +1,51 @@
+---
+title: "REBENCH"
+summary: "URL 입력만으로 Playwright evidence와 LLM을 결합해 UX/전환 개선 리포트를 생성하는 서비스"
+description: "REBENCH 프로젝트 요약"
+---
+
+## 프로젝트/팀 기본정보
+
+- 팀명: bigdaditor
+- 프로젝트명: REBENCH
+- GitHub 저장소: https://github.com/bigdaditor/rebench
+
+## 제품 링크 또는 실행 방법
+
+README Quickstart 참고 (make dev, make test)
+
+## 문제 정의 (Problem)
+
+웹 서비스 UX를 근거 기반으로 빠르게 진단하고, 전환/이탈 개선 우선순위를 비전문가도 이해할 수 있게 정리하기 어려운 문제를 해결합니다.
+
+## 해결 방식 (Solution)
+
+Playwright로 URL을 자동 탐색해 스크린샷/DOM/네트워크 evidence를 수집하고, 규칙 기반 baseline과 LLM 서술을 결합해 서술+표 중심 리포트를 생성합니다.
+
+## 한 줄 소개
+
+URL 입력만으로 Playwright evidence와 LLM을 결합해 UX/전환 개선 리포트를 생성하는 서비스
+
+## 데모 설명 (3분 이내 기준)
+
+입력 URL에 대해 이탈 위험 구간, 전환 기회 구간, 실험/추적 계획을 표와 서술로 제공하는 흐름을 시연합니다.
+
+## 팀 소개 및 역할
+
+- bigdaditor: Product, Frontend, Backend, AI Integration
+
+## 기술 스택
+
+- Frontend: React + Vite
+- Backend: FastAPI + Playwright
+- LLM: OpenAI Responses API
+- Tooling: pytest, ruff, pnpm
+
+## 실행/검증 방법
+
+- API/Web 통합 검증: make test
+- 개별 실행: make dev-api, make dev-web
+
+## 라이선스/출처
+
+프로젝트 및 의존 라이브러리 라이선스는 각 저장소/패키지 메타데이터를 따릅니다.
