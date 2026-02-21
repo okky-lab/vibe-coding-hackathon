@@ -1,0 +1,39 @@
+---
+title: "AI 릴레이 만화"
+summary: "그림 실력 없어도 만화 작가가 되는 서비스. AI 이미지 생성과 턴제 릴레이로 누구나 만화를 만들고 공유한다."
+description: "AI 릴레이 만화 프로젝트 요약"
+---
+
+## 프로젝트/팀 기본정보
+
+- 팀명: AI 릴레이 만화 팀
+- 프로젝트명: AI 릴레이 만화
+- GitHub 저장소: https://github.com/kimhaegyeong/ai_webtoon
+
+## 제품 링크 또는 실행 방법
+
+로컬: npm install 후 .env 설정, npm run dev → http://localhost:3000. 배포: Vercel 등에 배포된 URL 사용 가능.
+
+## 문제 정의 (Problem)
+
+그림 장벽: 만화를 그리고 싶지만 그림 실력 때문에 망설이는 사람이 많다. 혼자만의 한계: 혼자 쓰면 아이디어가 고갈되거나 전개가 단조로워진다. 공유 부담: 완성된 만화를 SNS에 올리기 위해 별도 편집·합성이 필요하다.
+
+## 해결 방식 (Solution)
+
+AI 이미지 생성(Gemini 2.5 Flash Image)으로 장면·대사·표음 입력만으로 만화 칸 자동 생성. 턴제 릴레이와 Supabase Realtime으로 링크 공유 시 닉네임만 입력해 즉시 참여·실시간 반영. 3칸 이상 시 AI 이어쓰기로 스토리·이미지 자동 완성. 세로 스트립 다운로드 및 고유 링크 복사로 SNS 공유 용이. Supabase Auth 이메일 로그인으로 에피소드 생성·참여 제한.
+
+## 한 줄 소개
+
+그림 실력 없어도 만화 작가가 되는 서비스. AI 이미지 생성과 턴제 릴레이로 누구나 만화를 만들고 공유한다.
+
+## 팀 소개 및 역할
+
+- 개발: 김해경
+
+## 기술 스택
+
+Next.js (App Router), React 18+, Tailwind CSS v4, Supabase (PostgreSQL, Realtime, Storage, Auth), Gemini 2.5 Flash Image / Flash API, Vercel, npm.
+
+## 실행/검증 방법
+
+의존성: npm install. 환경 변수: .env.example 참고해 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, GEMINI_API_KEY 설정. 실행: npm run dev 후 http://localhost:3000 접속. 로그인 후 새 만화 시작하기로 동작 확인.
