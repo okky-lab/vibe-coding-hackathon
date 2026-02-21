@@ -630,3 +630,26 @@
 ### 결과
 - 일정 문서와 요구사항 문서가 최신 운영 시간표와 일치합니다.
 - 발표/심사/시상 구간이 명확해져 참가자 안내 정확성과 운영 재현성이 향상됩니다.
+
+## ADR-032 운영 데이터에서 중복/목업 제출 항목 제거
+
+- 상태: 승인
+- 날짜: 2026-02-21
+
+### 배경
+- 바이브 코딩 결과 목록에 `AuraGC`와 `AuraGC-AdaptiveGC`가 동시에 존재해 동일 계열 결과가 중복 노출되고 있었습니다.
+- 팀 목록에는 운영용 실데이터 외에 mock 성격의 샘플 팀(`CareFeed`, `Sprint Pilot`)이 포함되어 있었습니다.
+
+### 결정
+- `contents/docs/vibe-coding/meta.json`에서 `auragc` 항목을 제거하고 `auragc-adaptivegc`만 유지합니다.
+- 단독 `AuraGC` 제출 문서/자산/팀 카드 파일을 제거합니다.
+  - `contents/docs/vibe-coding/auragc.mdx`
+  - `contents/docs/vibe-coding/assets/auragc/**`
+  - `contents/team/submission-team-auragc-auragc.mdx`
+- mock 팀 샘플 파일을 제거합니다.
+  - `contents/team/team-lattice-builders.mdx` (`CareFeed`)
+  - `contents/team/team-wave-labs.mdx` (`Sprint Pilot`)
+
+### 결과
+- 운영 목록에서 `AuraGC-AdaptiveGC`만 남고, 중복으로 보이던 `AuraGC` 단독 항목이 제거됩니다.
+- `/team` 및 관련 목록에서 mock 팀 데이터가 제외되어 실제 제출 중심으로 정리됩니다.

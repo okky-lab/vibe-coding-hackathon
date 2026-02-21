@@ -251,6 +251,10 @@
 - 검색 구현은 `docsSource` 기반 `createFromSource`를 사용해야 하며, UI 컴포넌트 커스터마이즈 없이 기존 DocsLayout 검색 토글/다이얼로그와 호환되어야 합니다.
 - `/api/search` 요청은 404를 반환하지 않아야 합니다.
 
+### FR-032 운영 제출 데이터 정제
+- 운영 메인 브랜치의 바이브 코딩 결과에는 중복 제출 항목(`auragc`, `auragc-adaptivegc` 동시 노출) 중 단독 `auragc` 항목이 포함되지 않아야 합니다.
+- 운영 메인 브랜치의 팀 데이터에는 mock 팀 샘플(`CareFeed`, `Sprint Pilot`)이 포함되지 않아야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -326,3 +330,6 @@
 - AC-061: `/api/search` 요청은 404를 반환하지 않아야 한다.
 - AC-062: `pnpm lint:app` 실행 시 에러 없이 완료되어야 한다.
 - AC-063: `pnpm typecheck:app` 실행 시 baseline 대비 신규 타입 오류가 없어야 한다.
+- AC-064: `contents/docs/vibe-coding/meta.json`의 `pages`에는 `auragc`가 포함되지 않아야 하며, `auragc-adaptivegc`는 유지되어야 한다.
+- AC-065: `contents/docs/vibe-coding/auragc.mdx`와 `contents/team/submission-team-auragc-auragc.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
+- AC-066: `contents/team/team-lattice-builders.mdx`와 `contents/team/team-wave-labs.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
