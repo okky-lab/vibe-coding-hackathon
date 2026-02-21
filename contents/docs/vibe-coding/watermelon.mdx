@@ -1,0 +1,54 @@
+---
+title: "WaterMelon"
+summary: "YouTube 영상 속 노래를 Spotify 플레이리스트로, 원클릭에"
+description: "WaterMelon 프로젝트 요약"
+---
+
+## 프로젝트/팀 기본정보
+
+- 팀명: WaterMelon
+- 프로젝트명: WaterMelon
+- GitHub 저장소: https://github.com/jisunipark/watermelon-okky
+
+## 제품 링크 또는 실행 방법
+
+README 실행 방법 참고
+
+## 문제 정의 (Problem)
+
+YouTube 음악 컴필레이션 영상에서 좋아하는 곡을 발견해도, 하나하나 검색해서 Spotify에 추가해야 하는 번거로움이 있습니다. 수십 곡이 담긴 영상일수록 이 과정은 더욱 고통스럽습니다.
+
+## 해결 방식 (Solution)
+
+YouTube 영상 페이지의 설명란, 고정 댓글, 챕터 마커에서 타임스탬프 패턴을 자동 감지하여 곡 목록을 추출하고, Spotify Search API로 매칭한 뒤, 원클릭으로 플레이리스트를 생성합니다. Chrome Extension Manifest V3 기반으로 Content Script가 곡을 추출하고, Background Service Worker가 Spotify OAuth 인증과 API 호출을 담당합니다.
+
+## 한 줄 소개
+
+YouTube 영상 속 노래를 Spotify 플레이리스트로, 원클릭에
+
+## 팀 소개 및 역할
+
+- jisunipark: 1인 풀스택 개발 (기획, 디자인, FE, Chrome Extension, Spotify API 연동)
+
+## 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| Popup UI | React · TypeScript · Vite |
+| 스타일 | Tailwind CSS v4 |
+| 애니메이션 | Framer Motion |
+| 곡 추출 | Vanilla JavaScript (Content Script) |
+| 인증 | Spotify OAuth (Implicit Grant) |
+| 플랫폼 | Chrome Extension Manifest V3 |
+
+## 실행/검증 방법
+
+1. `git clone https://github.com/jisunipark/watermelon-okky.git`
+2. `npm install && npm run build`
+3. Chrome에서 `chrome://extensions` → 개발자 모드 → 압축해제된 확장 프로그램 로드 → 프로젝트 루트 선택
+4. `secrets.js`에 Spotify Client ID 설정
+5. YouTube 음악 컴필레이션 영상에서 WaterMelon 아이콘 클릭
+
+## 라이선스/출처
+
+MIT License
