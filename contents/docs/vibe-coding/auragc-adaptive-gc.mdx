@@ -1,0 +1,50 @@
+---
+title: "AURAGC - Adaptive GC"
+summary: "반응형 스마트 Python GC"
+description: "AURAGC - Adaptive GC 프로젝트 요약"
+---
+
+## 프로젝트/팀 기본정보
+
+- 팀명: 낭만개발
+- 프로젝트명: AURAGC - Adaptive GC
+- GitHub 저장소: https://github.com/nowuz47/py_aura_gc
+
+## 제품 링크 또는 실행 방법
+
+https://github.com/nowuz47/py_aura_gc 접속 하여 whl 파일을 pip install 하여 사용
+
+## 문제 정의 (Problem)
+
+Python은 객체 수가 임계치에 도달해야 GC 작동함
+Python은 컨테이너(Cgroup) 한계를 인지하지 못해 OOM(Out-of-Memory)에 취약
+대규모 힙 스캔 시 발생하는 Stop-The-World 지연시간이 매우 길어 서비스 마비 가능성
+
+## 해결 방식 (Solution)
+
+- AuraGC의 '두뇌'인 가버너는 제어 공학의 PID 개념을 응용하여 **긴급도(Urgency Score, $U$)**를 계산
+- $$U = (w_p \cdot P_{psi}) + (w_v \cdot V_{alloc}) + \text{Safety Margin}$$
+- 긴급 수집 후 살아남은 객체는 '누수 데이터'이거나 '불변 데이터'일 확률이 높음
+- 이를 즉시 `gc.freeze()` 처리하여 **불사(Immortal)** 상태로 낙인찍음
+- **결과**: 다음 수집 시 동결된 객체는 스캔 대상에서 제외되어 **Stop-The-World 시간을 90% 이상 단축**
+
+## 한 줄 소개
+
+반응형 스마트 Python GC
+
+## 데모 설명 (3분 이내 기준)
+
+AuraGC Visualizer compares Baseline vs AuraGC under 'Leak Storm' conditions, demonstrating Sawtooth Stability.
+
+## 팀 소개 및 역할
+
+- juwonkim: Core Engine & Visualizer
+- Antigravity: AI Coding Assistant
+
+## 기술 스택
+
+Python 3.14, C, Docker, Streamlit, FastAPI, Linux PSI
+
+## 라이선스/출처
+
+MIT License
