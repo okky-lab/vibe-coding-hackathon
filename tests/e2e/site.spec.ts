@@ -92,12 +92,17 @@ test("없는 문서 경로는 404로 처리된다", async ({ page }) => {
   await expect(page.getByText("페이지를 찾을 수 없습니다")).toBeVisible();
 });
 
+test("기존 팀 상세 slug 경로는 404로 처리된다", async ({ page }) => {
+  const response = await page.goto("/team/submission-seunghan-launchcrew");
+  expect(response?.status()).toBe(404);
+});
+
 test("문서/팀 상세에는 giscus 댓글이 노출되고 목록 페이지에는 노출되지 않는다", async ({ page }) => {
   await page.goto("/docs/overview");
   await expect(page.locator(".giscus")).toHaveCount(1);
   await expect(page.locator('.giscus script[src="https://giscus.app/client.js"]')).toHaveCount(1);
 
-  await page.goto("/team/submission-seunghan-launchcrew");
+  await page.goto("/team/submission-seunghan91-launchcrew-miniton");
   await expect(page.locator(".giscus")).toHaveCount(1);
   await expect(page.locator('.giscus script[src="https://giscus.app/client.js"]')).toHaveCount(1);
 

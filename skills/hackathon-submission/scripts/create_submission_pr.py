@@ -15,6 +15,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Sequence, Tuple
+from urllib.parse import urlparse
 
 DEFAULT_TARGET_REPO = "okky-lab/vibe-coding-hackathon"
 DEFAULT_TARGET_REPO_URL = "https://github.com/okky-lab/vibe-coding-hackathon"
@@ -104,10 +105,31 @@ def is_http_url(value: str) -> bool:
 
 
 def as_optional_url(value: str) -> Optional[str]:
-    candidate = value.strip()
-    if not candidate:
-        return None
-    return candidate if is_http_url(candidate) else None
+  candidate = value.strip()
+  if not candidate:
+    return None
+  return candidate if is_http_url(candidate) else None
+
+
+def parse_github_owner_repo_slugs(repo_url: str) -> Tuple[str, str]:
+    candidate = repo_url.strip()
+    parsed = urlparse(candidate)
+    host = parsed.netloc.lower()
+    if parsed.scheme not in {"http", "https"} or host not in {"github.com", "www.github.com"}:
+        raise ValueError("--repo-url must be a valid GitHub repository URL (https://github.com/<owner>/<repo>).")
+
+    parts = [segment for segment in parsed.path.split("/") if segment]
+    if len(parts) < 2:
+        raise ValueError("--repo-url must include owner and repository name.")
+
+    owner = parts[0]
+    repository = parts[1]
+    if repository.endswith(".git"):
+        repository = repository[:-4]
+
+    owner_slug = slugify(owner)
+    repository_slug = slugify(repository)
+    return owner_slug, repository_slug
 
 
 def normalize_submitted_at(value: str) -> str:
@@ -120,8 +142,8 @@ def normalize_submitted_at(value: str) -> str:
 def create_team_submission_doc(
     repo_root: Path,
     *,
-    team_slug: str,
-    project_slug: str,
+    owner_slug: str,
+    repository_slug: str,
     team_name: str,
     project_name: str,
     one_liner: str,
@@ -138,7 +160,7 @@ def create_team_submission_doc(
     update_existing: bool,
 ) -> Path:
     team_root = repo_root / "contents" / "team"
-    team_file = team_root / f"{TEAM_SUBMISSION_FILE_PREFIX}-{team_slug}-{project_slug}.mdx"
+    team_file = team_root / f"{TEAM_SUBMISSION_FILE_PREFIX}-{owner_slug}-{repository_slug}.mdx"
 
     if team_file.exists() and not update_existing:
         raise FileExistsError(
@@ -361,8 +383,8 @@ def create_submission_artifacts(
     }
     ensure_required_placeholders(template, required_placeholders)
 
-    team_slug = slugify(team_name)
     project_slug = slugify(project_name)
+    owner_slug, repository_slug = parse_github_owner_repo_slugs(repo_url)
 
     docs_root = repo_root / "contents" / "docs"
     doc_file = docs_root / "vibe-coding" / f"{project_slug}.mdx"
@@ -405,8 +427,8 @@ def create_submission_artifacts(
 
     team_file = create_team_submission_doc(
         repo_root,
-        team_slug=team_slug,
-        project_slug=project_slug,
+        owner_slug=owner_slug,
+        repository_slug=repository_slug,
         team_name=team_name,
         project_name=project_name,
         one_liner=one_liner,
@@ -479,7 +501,15 @@ def ensure_git_identity(repo_path: Path) -> None:
     )
 
 
-def commit_changes(repo_path: Path, *, team_slug: str, project_slug: str, project_name: str, team_name: str) -> str:
+def commit_changes(
+    repo_path: Path,
+    *,
+    owner_slug: str,
+    repository_slug: str,
+    project_slug: str,
+    project_name: str,
+    team_name: str,
+) -> str:
     run(
         ["git", "add", "contents/docs/meta.json", "contents/docs/vibe-coding", "contents/team"],
         cwd=repo_path,
@@ -497,7 +527,7 @@ def commit_changes(repo_path: Path, *, team_slug: str, project_slug: str, projec
             "",
             "What:",
             f"- contents/docs/vibe-coding/{project_slug}.mdx 생성",
-            f"- contents/team/{TEAM_SUBMISSION_FILE_PREFIX}-{team_slug}-{project_slug}.mdx 카드 데이터 생성",
+            f"- contents/team/{TEAM_SUBMISSION_FILE_PREFIX}-{owner_slug}-{repository_slug}.mdx 카드 데이터 생성",
             "- 제출용 assets 안내 파일 및 docs/team meta 데이터 갱신",
             "",
             "Verify:",
@@ -719,6 +749,7 @@ def main() -> int:
     try:
         team_slug = slugify(args.team_name)
         project_slug = slugify(args.project_name)
+        owner_slug, repository_slug = parse_github_owner_repo_slugs(args.repo_url)
     except Exception as error:
         print(f"[ERROR] {error}", file=sys.stderr)
         return 1
@@ -820,7 +851,8 @@ def main() -> int:
 
         commit_sha = commit_changes(
             repo_path,
-            team_slug=team_slug,
+            owner_slug=owner_slug,
+            repository_slug=repository_slug,
             project_slug=project_slug,
             project_name=args.project_name,
             team_name=args.team_name,

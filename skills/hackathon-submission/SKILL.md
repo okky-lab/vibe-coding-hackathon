@@ -99,7 +99,7 @@ The script must create:
 - `contents/docs/vibe-coding/assets/<project-slug>/demo/README.md`
 - `contents/docs/vibe-coding/assets/<project-slug>/evidence/README.md`
 - `contents/docs/vibe-coding/assets/<project-slug>/team/README.md`
-- `contents/team/submission-<team-slug>-<project-slug>.mdx`
+- `contents/team/submission-<owner-slug>-<repo-slug>.mdx`
 
 The script must ensure navigation metadata:
 
