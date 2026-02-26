@@ -263,7 +263,8 @@
 ### FR-034 문서/팀 상세 페이지 giscus 댓글 통합
 - 시스템은 문서 상세(`/docs/[slug]`)와 팀 제출 상세(`/team/<submission-doc-slug>`) 본문 하단에 giscus 댓글 영역을 노출해야 합니다.
 - giscus 렌더링 컨테이너는 CSS selector 호환을 위해 `.giscus` 클래스를 가진 요소를 포함해야 합니다.
-- giscus 스크립트는 `https://giscus.app/client.js`를 사용해야 하며, 저장소/카테고리/매핑 등 제공된 `data-*` 속성값을 그대로 유지해야 합니다.
+- giscus 스크립트는 `https://giscus.app/client.js`를 사용해야 하며, 저장소/카테고리/매핑 등 제공된 `data-*` 속성값을 유지해야 합니다.
+- giscus `data-theme`는 사이트 테마를 따라 동기화되어야 하며, `dark`일 때 `dark_dimmed`, `light`일 때 `light`를 사용해야 합니다.
 - 라우트 전환 시 댓글 영역은 `pathname` 기준으로 재초기화되어야 하며, 중복 iframe/script가 누적되지 않아야 합니다.
 - 문서 인덱스(`/docs`)와 팀 목록(`/team`)에는 giscus 댓글 영역이 노출되지 않아야 합니다.
 
@@ -357,9 +358,10 @@
 - AC-069: 사용자가 `/docs/overview`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
 - AC-070: 사용자가 `/team/submission-seunghan91-launchcrew-miniton`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
 - AC-071: 문서/팀 상세 페이지의 `.giscus` 컨테이너 내부에는 `src="https://giscus.app/client.js"` 스크립트가 생성되어야 한다.
-- AC-072: giscus 스크립트는 `data-repo="okky-lab/vibe-coding-hackathon"`, `data-category="General"`, `data-mapping="pathname"`, `data-theme="preferred_color_scheme"`, `data-lang="ko"` 속성을 포함해야 한다.
+- AC-072: giscus 스크립트는 `data-repo="okky-lab/vibe-coding-hackathon"`, `data-category="General"`, `data-mapping="pathname"`, `data-lang="ko"` 속성을 포함해야 하며 `data-theme`는 사이트 테마와 동기화되어 `dark_dimmed`/`light` 값으로 갱신되어야 한다.
 - AC-073: 사용자가 `/docs` 또는 `/team` 목록 페이지에 접속하면 `.giscus` 댓글 컨테이너가 노출되지 않아야 한다.
 - AC-074: 사용자가 문서 상세 페이지 간 클라이언트 라우팅을 수행해도 `.giscus` 컨테이너 내부의 giscus 스크립트는 1개만 유지되어야 한다.
 - AC-075: `contents/team/*.mdx` 파일명은 모두 `^[a-z0-9-]+\\.mdx$` 패턴을 만족해야 한다.
 - AC-076: `contents/team` 제출 파일명은 모두 `submission-<owner-slug>-<repo-slug>.mdx` 규칙을 따라야 하며 basename이 중복되지 않아야 한다.
 - AC-077: 사용자가 기존 경로(`/team/submission-seunghan-launchcrew`)에 접속하면 하위호환 리다이렉트 없이 404를 반환해야 한다.
+- AC-078: 사용자가 문서/팀 상세 페이지에서 `<html>` `dark` 클래스를 토글해도 `.giscus` 내부 스크립트/iframe 개수는 1개를 초과하지 않아야 하며, 댓글 테마는 `dark_dimmed`와 `light` 사이에서 갱신되어야 한다.

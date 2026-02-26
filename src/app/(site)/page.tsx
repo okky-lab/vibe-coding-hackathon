@@ -69,7 +69,7 @@ export default function HomePage() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="mt-14 w-full">
+      <div className="mt-56 w-full">
         <ContributorsCta />
       </div>
     </div>

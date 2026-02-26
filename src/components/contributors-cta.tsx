@@ -19,7 +19,7 @@ export function ContributorsCta() {
 
       <div className="relative z-10 flex w-full flex-col items-center">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">Community Recognition</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-4xl">Contributors</h2>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-4xl">팀</h2>
         <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-6 md:text-base">
           이 저장소에 기여한 GitHub 사용자 아바타를 한눈에 확인할 수 있습니다.
         </p>

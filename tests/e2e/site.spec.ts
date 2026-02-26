@@ -12,15 +12,15 @@ test("랜딩 페이지에 contributors 아바타 섹션이 노출된다", async 
   await page.goto("/");
 
   const section = page.getByTestId("contributors-rocks");
-  await expect(section.getByRole("heading", { name: "Contributors" })).toBeVisible();
+  await expect(section.getByRole("heading", { name: "팀" })).toBeVisible();
 
-  const contributorsLink = section.getByLabel("GitHub contributors");
+  const contributorsLink = section.getByRole("link", { name: "GitHub contributors" });
   await expect(contributorsLink).toHaveAttribute(
     "href",
     "https://github.com/okky-lab/vibe-coding-hackathon/graphs/contributors",
   );
-  await expect(section.locator('img[alt="okky-lab/vibe-coding-hackathon contributors"]')).toHaveCount(1);
-  await expect(section.locator('a[href^="https://contrib.rocks"]')).toHaveCount(1);
+  await expect(section.getByRole("img", { name: "okky-lab/vibe-coding-hackathon contributors" })).toBeVisible();
+  await expect(section.getByRole("link", { name: "contrib.rocks" })).toHaveAttribute("href", "https://contrib.rocks");
 });
 
 test("행사 일정 타임라인 4단계가 표시된다", async ({ page }) => {
@@ -114,8 +114,27 @@ test("기존 팀 상세 slug 경로는 404로 처리된다", async ({ page }) =>
 
 test("문서/팀 상세에는 giscus 댓글이 노출되고 목록 페이지에는 노출되지 않는다", async ({ page }) => {
   await page.goto("/docs/overview");
-  await expect(page.locator(".giscus")).toHaveCount(1);
-  await expect(page.locator('.giscus script[src="https://giscus.app/client.js"]')).toHaveCount(1);
+  const giscus = page.locator(".giscus");
+  const giscusScript = page.locator('.giscus script[src="https://giscus.app/client.js"]');
+  const giscusIframe = page.locator(".giscus iframe.giscus-frame");
+
+  await expect(giscus).toHaveCount(1);
+  await expect(giscusScript).toHaveCount(1);
+  await expect(giscusScript).toHaveAttribute("data-theme", "dark_dimmed");
+
+  await page.evaluate(() => {
+    document.documentElement.classList.remove("dark");
+  });
+  await expect(giscusScript).toHaveAttribute("data-theme", "light");
+  await expect(giscusScript).toHaveCount(1);
+  await expect.poll(async () => await giscusIframe.count()).toBeLessThanOrEqual(1);
+
+  await page.evaluate(() => {
+    document.documentElement.classList.add("dark");
+  });
+  await expect(giscusScript).toHaveAttribute("data-theme", "dark_dimmed");
+  await expect(giscusScript).toHaveCount(1);
+  await expect.poll(async () => await giscusIframe.count()).toBeLessThanOrEqual(1);
 
   await page.goto("/team/submission-seunghan91-launchcrew-miniton");
   await expect(page.locator(".giscus")).toHaveCount(1);

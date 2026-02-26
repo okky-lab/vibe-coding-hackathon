@@ -744,3 +744,27 @@
 - `/team/<slug>` URL 체계가 소문자 영문/숫자/하이픈 기반으로 일관되게 정렬됩니다.
 - 팀 파일명 고유성 기준이 GitHub 저장소 식별자로 고정되어 충돌 가능성과 관리 비용이 줄어듭니다.
 - 신규 제출 생성 경로가 저장소 규칙과 동일해져 파일명 드리프트 재발을 방지합니다.
+
+## ADR-037 giscus 댓글 테마를 사이트 테마와 동기화
+
+- 상태: 승인
+- 날짜: 2026-02-26
+
+### 배경
+- giscus의 기존 설정 `data-theme="preferred_color_scheme"`는 OS 선호 색상 기준이라 사이트의 실제 테마 클래스(`html.dark`)와 어긋날 수 있었습니다.
+- 본 사이트는 `RootProvider`에서 `defaultTheme: "dark"`, `enableSystem: false`를 사용하므로 giscus도 사이트 테마를 단일 기준으로 따라야 시각 일관성이 보장됩니다.
+- 라우트 전환 시 중복 생성 방지 로직은 이미 안정화되어 있어, 테마 변경은 재주입 없이 반영하는 방식이 필요했습니다.
+
+### 결정
+- `src/components/giscus-comments.client.tsx`에서 giscus 테마를 `<html>`의 `dark` 클래스 기반으로 계산합니다.
+  - dark: `dark_dimmed`
+  - light: `light`
+- `MutationObserver`로 `<html class>` 변화를 감시해 theme state를 동기화합니다.
+- 스크립트 재주입은 기존과 동일하게 `pathname` 변경 시점에만 수행하고, 주입 시 `data-theme`에 현재 theme 값을 설정합니다.
+- 테마 변경 시에는 `.giscus iframe.giscus-frame`에 `postMessage({ giscus: { setConfig: { theme } } }, "https://giscus.app")`를 전송해 런타임으로 테마를 갱신합니다.
+- 동시에 `.giscus script[src="https://giscus.app/client.js"]`의 `data-theme` 속성을 최신 값으로 갱신해 상태 불일치를 방지합니다.
+
+### 결과
+- giscus 댓글 UI가 OS 선호값이 아니라 사이트 테마와 정확히 동기화됩니다.
+- 테마 전환 시 iframe/script 재생성 없이 반영되어 입력 유실/깜빡임 위험이 줄어듭니다.
+- 기존 `pathname` 기반 재초기화 구조를 유지해 라우트 전환 중복 누적 방지 특성을 보존합니다.
