@@ -12,7 +12,7 @@ test("랜딩 페이지에 contributors 아바타 섹션이 노출된다", async 
   await page.goto("/");
 
   const section = page.getByTestId("contributors-rocks");
-  await expect(section.getByRole("heading", { name: "팀" })).toBeVisible();
+  await expect(section.getByRole("heading", { name: "Contributors" })).toBeVisible();
 
   const contributorsLink = section.getByRole("link", { name: "GitHub contributors" });
   await expect(contributorsLink).toHaveAttribute(
