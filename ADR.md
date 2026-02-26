@@ -687,3 +687,37 @@
 ### 결과
 - `/team`의 제출 시각이 서버/클라이언트 환경 타임존과 무관하게 KST 기준으로 일관되게 표시됩니다.
 - 시간 해석 혼선을 줄이고 운영 커뮤니케이션 기준과 화면 표기가 정렬됩니다.
+
+## ADR-035 문서/팀 상세 페이지 giscus 댓글 통합
+
+- 상태: 승인
+- 날짜: 2026-02-26
+
+### 배경
+- 운영 문서와 팀 제출 결과 페이지에 대한 공개 피드백 채널이 필요했습니다.
+- 이미 giscus 저장소/카테고리 설정이 완료되어 있어, 사이트 렌더링 구간에 안전하게 주입하는 방식이 핵심 과제였습니다.
+- Next.js App Router 환경에서 클라이언트 라우팅이 발생할 때 giscus iframe/script 중복 생성 없이 경로 단위 스레드를 유지해야 했습니다.
+
+### 결정
+- `src/components/giscus-comments.client.tsx` 공통 클라이언트 컴포넌트를 추가해 `/docs/[slug]`, `/team/[slug]`에서 재사용합니다.
+- giscus 렌더링 컨테이너는 `.giscus` 클래스를 반드시 포함해 selector 기반 주입 규칙을 보장합니다.
+- 스크립트는 `https://giscus.app/client.js`를 동적으로 주입하며, 아래 설정값을 고정합니다.
+  - `data-repo="okky-lab/vibe-coding-hackathon"`
+  - `data-repo-id="R_kgDORNqBFQ"`
+  - `data-category="General"`
+  - `data-category-id="DIC_kwDORNqBFc4C3N8h"`
+  - `data-mapping="pathname"`
+  - `data-strict="0"`
+  - `data-reactions-enabled="1"`
+  - `data-emit-metadata="1"`
+  - `data-input-position="top"`
+  - `data-theme="preferred_color_scheme"`
+  - `data-lang="ko"`
+  - `data-loading="lazy"`
+- `usePathname` 기반 `useEffect`에서 컨테이너를 초기화한 뒤 스크립트를 재주입해, 라우트 전환 시 중복 누적을 방지합니다.
+- 댓글 노출 범위는 상세 페이지로 한정하고, 목록 페이지(`/docs`, `/team`)에는 노출하지 않습니다.
+
+### 결과
+- 문서 상세와 팀 상세에서 동일한 giscus 댓글 UX를 제공할 수 있습니다.
+- 제공된 giscus 설정값을 변경하지 않고 그대로 사용하여 Discussions 매핑 일관성을 유지합니다.
+- 의존성 추가 없이 공통 컴포넌트 재사용으로 유지보수 복잡도를 낮췄습니다.

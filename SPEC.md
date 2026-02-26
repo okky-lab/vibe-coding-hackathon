@@ -260,6 +260,13 @@
 - `/team` 카드의 `submittedAt` 표시는 `Asia/Seoul` 타임존 기준으로 렌더링되어야 합니다.
 - `/team` 카드의 제출 시각 문자열 끝에는 `KST` 표기가 포함되어야 합니다.
 
+### FR-034 문서/팀 상세 페이지 giscus 댓글 통합
+- 시스템은 문서 상세(`/docs/[slug]`)와 팀 제출 상세(`/team/<submission-doc-slug>`) 본문 하단에 giscus 댓글 영역을 노출해야 합니다.
+- giscus 렌더링 컨테이너는 CSS selector 호환을 위해 `.giscus` 클래스를 가진 요소를 포함해야 합니다.
+- giscus 스크립트는 `https://giscus.app/client.js`를 사용해야 하며, 저장소/카테고리/매핑 등 제공된 `data-*` 속성값을 그대로 유지해야 합니다.
+- 라우트 전환 시 댓글 영역은 `pathname` 기준으로 재초기화되어야 하며, 중복 iframe/script가 누적되지 않아야 합니다.
+- 문서 인덱스(`/docs`)와 팀 목록(`/team`)에는 giscus 댓글 영역이 노출되지 않아야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -340,3 +347,9 @@
 - AC-066: `contents/team/team-lattice-builders.mdx`와 `contents/team/team-wave-labs.mdx`는 운영 메인 브랜치에 존재하지 않아야 한다.
 - AC-067: `contents/team/*.mdx`의 `projectUrl`, `repositoryUrl`, `demoUrl` 값은 URL 형식을 만족하거나 필드가 생략되어야 한다.
 - AC-068: `/team`의 `제출 시각`은 서버/클라이언트 실행 환경 타임존과 무관하게 KST(`Asia/Seoul`) 기준으로 표시되어야 하며, 문자열에 `KST`가 포함되어야 한다.
+- AC-069: 사용자가 `/docs/overview`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
+- AC-070: 사용자가 `/team/submission-seunghan-launchcrew`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
+- AC-071: 문서/팀 상세 페이지의 `.giscus` 컨테이너 내부에는 `src="https://giscus.app/client.js"` 스크립트가 생성되어야 한다.
+- AC-072: giscus 스크립트는 `data-repo="okky-lab/vibe-coding-hackathon"`, `data-category="General"`, `data-mapping="pathname"`, `data-theme="preferred_color_scheme"`, `data-lang="ko"` 속성을 포함해야 한다.
+- AC-073: 사용자가 `/docs` 또는 `/team` 목록 페이지에 접속하면 `.giscus` 댓글 컨테이너가 노출되지 않아야 한다.
+- AC-074: 사용자가 문서 상세 페이지 간 클라이언트 라우팅을 수행해도 `.giscus` 컨테이너 내부의 giscus 스크립트는 1개만 유지되어야 한다.
