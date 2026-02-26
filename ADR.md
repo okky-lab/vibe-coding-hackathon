@@ -721,3 +721,26 @@
 - 문서 상세와 팀 상세에서 동일한 giscus 댓글 UX를 제공할 수 있습니다.
 - 제공된 giscus 설정값을 변경하지 않고 그대로 사용하여 Discussions 매핑 일관성을 유지합니다.
 - 의존성 추가 없이 공통 컴포넌트 재사용으로 유지보수 복잡도를 낮췄습니다.
+
+## ADR-036 팀 제출 문서 파일명을 GitHub owner/repo 기반 영문 slug로 정규화
+
+- 상태: 승인
+- 날짜: 2026-02-26
+
+### 배경
+- `contents/team`의 제출 문서 파일명은 한글/영문 혼합 slug가 공존해 URL 일관성과 재현성이 떨어졌습니다.
+- 팀 상세 라우트(`/team/[slug]`)가 파일명(`info.path`)을 직접 slug로 사용하기 때문에, 파일명 규칙이 곧 공개 URL 규칙으로 노출됩니다.
+- 제출 자동화 스크립트가 기존 `submission-<team-slug>-<project-slug>` 규칙을 사용하면서 한글 slug가 다시 생성될 수 있어 재발 방지가 필요했습니다.
+
+### 결정
+- `contents/team` 제출 문서 파일명 규칙을 `submission-<owner-slug>-<repo-slug>.mdx`로 통일합니다.
+- `<owner-slug>`, `<repo-slug>`는 `repositoryUrl`의 GitHub owner/repository를 원천값으로 사용해 생성합니다.
+- repository 값이 `.git`으로 끝나면 slug 생성 전에 접미사를 제거합니다.
+- `team-seungtae-lee.mdx`를 포함한 비표준 파일명도 동일 규칙으로 정규화합니다.
+- 기존 한글/혼합 slug 경로에 대한 리다이렉트 호환은 제공하지 않습니다.
+- `hackathon-submission` 스크립트/문서의 팀 카드 생성 규약도 동일 규칙으로 갱신합니다.
+
+### 결과
+- `/team/<slug>` URL 체계가 소문자 영문/숫자/하이픈 기반으로 일관되게 정렬됩니다.
+- 팀 파일명 고유성 기준이 GitHub 저장소 식별자로 고정되어 충돌 가능성과 관리 비용이 줄어듭니다.
+- 신규 제출 생성 경로가 저장소 규칙과 동일해져 파일명 드리프트 재발을 방지합니다.

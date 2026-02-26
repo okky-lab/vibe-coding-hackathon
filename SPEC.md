@@ -169,7 +169,7 @@
 ### FR-018 팀 페이지 내 바이브 코딩 결과 카드 통합
 - `/team` 경로는 `contents/team` 기반의 단일 카드 목록으로 팀/제출 프로젝트를 표시해야 합니다.
 - 바이브 코딩 제출 결과도 기존 팀 프로젝트 카드와 동일한 카드 형식으로 같은 목록에 포함되어야 합니다.
-- 바이브 코딩 제출 카드는 `contents/team/submission-<team-slug>-<project-slug>.mdx` 데이터를 통해 렌더링되어야 합니다.
+- 바이브 코딩 제출 카드는 `contents/team/submission-<owner-slug>-<repo-slug>.mdx` 데이터를 통해 렌더링되어야 합니다.
 - `/vibe-coding` 경로는 독립 카드 목록을 렌더링하지 않고 `/team`으로 연결되어야 합니다.
 
 ### FR-019 제출 결과 문서 템플릿 간소화
@@ -267,6 +267,13 @@
 - 라우트 전환 시 댓글 영역은 `pathname` 기준으로 재초기화되어야 하며, 중복 iframe/script가 누적되지 않아야 합니다.
 - 문서 인덱스(`/docs`)와 팀 목록(`/team`)에는 giscus 댓글 영역이 노출되지 않아야 합니다.
 
+### FR-035 팀 제출 문서 파일명 영문 고유 slug 정규화
+- `contents/team`의 팀 제출 문서 파일명은 `submission-<owner-slug>-<repo-slug>.mdx` 형식을 따라야 합니다.
+- `<owner-slug>`, `<repo-slug>`는 `repositoryUrl`의 GitHub owner/repository 값을 소문자 영문/숫자/하이픈 slug로 정규화해 생성해야 합니다.
+- repository 이름이 `.git` 접미사를 포함한 경우 파일명 생성 시 접미사를 제거해야 합니다.
+- 팀 제출 문서 파일명은 `^[a-z0-9-]+\\.mdx$` 패턴을 만족해야 하며, 중복 파일명이 발생하지 않아야 합니다.
+- 기존 한글/혼합 slug 경로에 대한 하위호환 리다이렉트는 제공하지 않아야 합니다.
+
 ## 4. 문서 목록 요구사항 (`contents/docs`)
 - 개요 (`overview`)
 - 일정 (`schedule`)
@@ -310,7 +317,7 @@
 - AC-029: `hackathon-submission` 스킬로 생성된 결과 문서에는 `AI 사용 여부 및 검증 방식` 섹션이 포함되지 않아야 한다.
 - AC-030: `/docs/vibe-coding`를 포함한 docs 사이드바에서 `바이브 코딩 결과` 항목 바로 위에 구분선이 보여야 한다.
 - AC-031: 구분선 아래에 `바이브 코딩 목록` 메뉴가 추가되어 `/team`으로 이동해야 한다.
-- AC-032: `hackathon-submission` 스킬 실행 시 `contents/team/submission-<team-slug>-<project-slug>.mdx` 파일이 생성되어 `/team` 카드 목록에 바로 반영되어야 한다.
+- AC-032: `hackathon-submission` 스킬 실행 시 `contents/team/submission-<owner-slug>-<repo-slug>.mdx` 파일이 생성되어 `/team` 카드 목록에 바로 반영되어야 한다.
 - AC-033: `hackathon-submission` 스킬 실행 시 결과 문서는 `contents/docs/vibe-coding/<project-slug>.mdx` 경로로 생성되어야 하며 팀/프로젝트 중첩 디렉터리를 만들지 않아야 한다.
 - AC-034: `hackathon-submission` 스킬 실행 시 자산은 `contents/docs/vibe-coding/assets/<project-slug>/demo|evidence|team/README.md`로 생성되어야 하고, `contents/docs/vibe-coding/meta.json`에는 `<project-slug>`가 등록되어야 한다.
 - AC-035: `/team` 카드 목록은 `submittedAt`이 최신인 항목부터 표시되어야 하며, `submittedAt`이 없거나 파싱 불가한 항목은 마지막 구간에 표시되어야 한다.
@@ -348,8 +355,11 @@
 - AC-067: `contents/team/*.mdx`의 `projectUrl`, `repositoryUrl`, `demoUrl` 값은 URL 형식을 만족하거나 필드가 생략되어야 한다.
 - AC-068: `/team`의 `제출 시각`은 서버/클라이언트 실행 환경 타임존과 무관하게 KST(`Asia/Seoul`) 기준으로 표시되어야 하며, 문자열에 `KST`가 포함되어야 한다.
 - AC-069: 사용자가 `/docs/overview`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
-- AC-070: 사용자가 `/team/submission-seunghan-launchcrew`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
+- AC-070: 사용자가 `/team/submission-seunghan91-launchcrew-miniton`에 접속하면 본문 하단에 `.giscus` 댓글 컨테이너가 노출되어야 한다.
 - AC-071: 문서/팀 상세 페이지의 `.giscus` 컨테이너 내부에는 `src="https://giscus.app/client.js"` 스크립트가 생성되어야 한다.
 - AC-072: giscus 스크립트는 `data-repo="okky-lab/vibe-coding-hackathon"`, `data-category="General"`, `data-mapping="pathname"`, `data-theme="preferred_color_scheme"`, `data-lang="ko"` 속성을 포함해야 한다.
 - AC-073: 사용자가 `/docs` 또는 `/team` 목록 페이지에 접속하면 `.giscus` 댓글 컨테이너가 노출되지 않아야 한다.
 - AC-074: 사용자가 문서 상세 페이지 간 클라이언트 라우팅을 수행해도 `.giscus` 컨테이너 내부의 giscus 스크립트는 1개만 유지되어야 한다.
+- AC-075: `contents/team/*.mdx` 파일명은 모두 `^[a-z0-9-]+\\.mdx$` 패턴을 만족해야 한다.
+- AC-076: `contents/team` 제출 파일명은 모두 `submission-<owner-slug>-<repo-slug>.mdx` 규칙을 따라야 하며 basename이 중복되지 않아야 한다.
+- AC-077: 사용자가 기존 경로(`/team/submission-seunghan-launchcrew`)에 접속하면 하위호환 리다이렉트 없이 404를 반환해야 한다.
