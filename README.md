@@ -38,3 +38,11 @@ pnpm test:e2e
 
 - 필수 환경변수: `NEXT_PUBLIC_APP_URL`
 - Preview/Production 환경을 분리해 배포합니다.
+
+## Contributors
+
+<a href="https://github.com/okky-lab/vibe-coding-hackathon/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=okky-lab/vibe-coding-hackathon" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).

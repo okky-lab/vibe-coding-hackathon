@@ -14,6 +14,11 @@ const nextConfig = {
         hostname: "file.okky.kr",
         pathname: "/images/**",
       },
+      {
+        protocol: "https",
+        hostname: "contrib.rocks",
+        pathname: "/image",
+      },
     ],
   },
 };

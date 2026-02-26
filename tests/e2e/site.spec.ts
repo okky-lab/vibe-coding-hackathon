@@ -8,6 +8,21 @@ test("랜딩 페이지에 기본 브랜딩과 핵심 섹션이 노출된다", as
   await expect(page.getByRole("heading", { name: "행사 일정 타임라인" })).toBeVisible();
 });
 
+test("랜딩 페이지에 contributors 아바타 섹션이 노출된다", async ({ page }) => {
+  await page.goto("/");
+
+  const section = page.getByTestId("contributors-rocks");
+  await expect(section.getByRole("heading", { name: "Contributors" })).toBeVisible();
+
+  const contributorsLink = section.getByRole("link", { name: "GitHub contributors" });
+  await expect(contributorsLink).toHaveAttribute(
+    "href",
+    "https://github.com/okky-lab/vibe-coding-hackathon/graphs/contributors",
+  );
+  await expect(section.getByRole("img", { name: "okky-lab/vibe-coding-hackathon contributors" })).toBeVisible();
+  await expect(section.getByRole("link", { name: "contrib.rocks" })).toHaveAttribute("href", "https://contrib.rocks");
+});
+
 test("행사 일정 타임라인 4단계가 표시된다", async ({ page }) => {
   await page.goto("/");
 

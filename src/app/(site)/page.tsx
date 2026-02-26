@@ -1,12 +1,15 @@
 "use client";
 
 import { Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from "@/registry/default/ui/tooltip";
 import { siteConfig } from "@/lib/site-config";
 
 export default function HomePage() {
+  const contributorsUrl = "https://github.com/okky-lab/vibe-coding-hackathon/graphs/contributors";
+  const contributorsImageUrl = "https://contrib.rocks/image?repo=okky-lab/vibe-coding-hackathon";
   const eventTitleKeyword = "바이브코딩 해커톤";
   const hasEventTitleKeyword = siteConfig.eventTitle.includes(eventTitleKeyword);
   const eventTitlePrefix = hasEventTitleKeyword
@@ -68,6 +71,37 @@ export default function HomePage() {
           </Tooltip>
         </TooltipProvider>
       </div>
+      <section className="mt-8 w-full max-w-3xl" data-testid="contributors-rocks">
+        <h2 className="text-base font-semibold tracking-tight">Contributors</h2>
+        <Link
+          href={contributorsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub contributors"
+          className="mt-3 block rounded-xl border border-border/70 bg-background/70 p-3 transition hover:bg-muted/50"
+        >
+          <Image
+            src={contributorsImageUrl}
+            alt="okky-lab/vibe-coding-hackathon contributors"
+            width={1200}
+            height={180}
+            className="h-auto w-full"
+            unoptimized
+          />
+        </Link>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Made with{" "}
+          <Link
+            href="https://contrib.rocks"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4"
+          >
+            contrib.rocks
+          </Link>
+          .
+        </p>
+      </section>
     </div>
   );
 }
