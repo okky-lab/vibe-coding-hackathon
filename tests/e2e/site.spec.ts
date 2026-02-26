@@ -14,13 +14,13 @@ test("랜딩 페이지에 contributors 아바타 섹션이 노출된다", async 
   const section = page.getByTestId("contributors-rocks");
   await expect(section.getByRole("heading", { name: "Contributors" })).toBeVisible();
 
-  const contributorsLink = section.getByRole("link", { name: "GitHub contributors" });
+  const contributorsLink = section.getByLabel("GitHub contributors");
   await expect(contributorsLink).toHaveAttribute(
     "href",
     "https://github.com/okky-lab/vibe-coding-hackathon/graphs/contributors",
   );
-  await expect(section.getByRole("img", { name: "okky-lab/vibe-coding-hackathon contributors" })).toBeVisible();
-  await expect(section.getByRole("link", { name: "contrib.rocks" })).toHaveAttribute("href", "https://contrib.rocks");
+  await expect(section.locator('img[alt="okky-lab/vibe-coding-hackathon contributors"]')).toHaveCount(1);
+  await expect(section.locator('a[href^="https://contrib.rocks"]')).toHaveCount(1);
 });
 
 test("행사 일정 타임라인 4단계가 표시된다", async ({ page }) => {

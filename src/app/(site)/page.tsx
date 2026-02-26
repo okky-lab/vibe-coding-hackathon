@@ -1,15 +1,13 @@
 "use client";
 
 import { Star } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
+import { ContributorsCta } from "@/components/contributors-cta";
 import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from "@/registry/default/ui/tooltip";
 import { siteConfig } from "@/lib/site-config";
 
 export default function HomePage() {
-  const contributorsUrl = "https://github.com/okky-lab/vibe-coding-hackathon/graphs/contributors";
-  const contributorsImageUrl = "https://contrib.rocks/image?repo=okky-lab/vibe-coding-hackathon";
   const eventTitleKeyword = "바이브코딩 해커톤";
   const hasEventTitleKeyword = siteConfig.eventTitle.includes(eventTitleKeyword);
   const eventTitlePrefix = hasEventTitleKeyword
@@ -31,11 +29,11 @@ export default function HomePage() {
           <span className="font-medium">{siteConfig.eventTitle}</span>
         )}
       </h1>
-      <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+      <p className="mt-6 max-w-xl text-lg text-muted-foreground">
         AI와 함께 아이디어를 빠르게 제품으로 구현하고, 데모까지 완주하는 실전형 빌드 이벤트입니다.
       </p>
-      <p className="mt-2 text-muted-foreground">문제 정의부터 구현·배포·공유까지 한 번에 경험해보세요.</p>
-      <div className="mt-8 flex gap-3">
+      <p className="mt-4 text-muted-foreground">문제 정의부터 구현·배포·공유까지 한 번에 경험해보세요.</p>
+      <div className="mt-12 flex gap-3">
         <Link
           href="/docs"
           className="inline-flex h-10 items-center justify-center rounded-4xl bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
@@ -71,37 +69,9 @@ export default function HomePage() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <section className="mt-8 w-full max-w-3xl" data-testid="contributors-rocks">
-        <h2 className="text-base font-semibold tracking-tight">Contributors</h2>
-        <Link
-          href={contributorsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub contributors"
-          className="mt-3 block rounded-xl border border-border/70 bg-background/70 p-3 transition hover:bg-muted/50"
-        >
-          <Image
-            src={contributorsImageUrl}
-            alt="okky-lab/vibe-coding-hackathon contributors"
-            width={1200}
-            height={180}
-            className="h-auto w-full"
-            unoptimized
-          />
-        </Link>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Made with{" "}
-          <Link
-            href="https://contrib.rocks"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
-            contrib.rocks
-          </Link>
-          .
-        </p>
-      </section>
+      <div className="mt-14 w-full">
+        <ContributorsCta />
+      </div>
     </div>
   );
 }
