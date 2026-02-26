@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import docsMeta from "../../../../contents/docs/meta.json";
 
+import { GiscusComments } from "@/components/giscus-comments.client";
 import { docsSource } from "@/lib/docs-source";
 import { getMDXComponents } from "@/mdx-components";
 import { siteConfig } from "@/lib/site-config";
@@ -160,6 +161,7 @@ export default async function DocsCatchAllPage(props: {
       <DocsBody>
         <Content components={getMDXComponents()} />
       </DocsBody>
+      <GiscusComments />
     </DocsPage>
   );
 }

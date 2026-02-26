@@ -92,6 +92,22 @@ test("없는 문서 경로는 404로 처리된다", async ({ page }) => {
   await expect(page.getByText("페이지를 찾을 수 없습니다")).toBeVisible();
 });
 
+test("문서/팀 상세에는 giscus 댓글이 노출되고 목록 페이지에는 노출되지 않는다", async ({ page }) => {
+  await page.goto("/docs/overview");
+  await expect(page.locator(".giscus")).toHaveCount(1);
+  await expect(page.locator('.giscus script[src="https://giscus.app/client.js"]')).toHaveCount(1);
+
+  await page.goto("/team/submission-seunghan-launchcrew");
+  await expect(page.locator(".giscus")).toHaveCount(1);
+  await expect(page.locator('.giscus script[src="https://giscus.app/client.js"]')).toHaveCount(1);
+
+  await page.goto("/docs");
+  await expect(page.locator(".giscus")).toHaveCount(0);
+
+  await page.goto("/team");
+  await expect(page.locator(".giscus")).toHaveCount(0);
+});
+
 test("/docs, /faq 페이지에도 공통 헤더와 푸터가 노출된다", async ({ page }) => {
   await page.goto("/docs");
   await expect(page.getByText("OKKY 바이브 코딩 해카톤").first()).toBeVisible();

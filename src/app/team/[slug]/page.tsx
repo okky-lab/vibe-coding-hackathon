@@ -5,6 +5,7 @@ import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { GiscusComments } from "@/components/giscus-comments.client";
 import { getMDXComponents } from "@/mdx-components";
 import { siteConfig } from "@/lib/site-config";
 
@@ -84,6 +85,7 @@ export default async function TeamSubmissionPage(props: {
           <div className="mt-6">
             <Content components={getMDXComponents()} />
           </div>
+          <GiscusComments />
         </article>
         {toc.length > 0 ? (
           <aside className="hidden xl:block">

@@ -419,3 +419,13 @@ header nav {
   color: inherit !important;
   transition: none !important;
 }
+
+.giscus-thread {
+  margin-top: calc(var(--spacing) * 10);
+  padding-top: calc(var(--spacing) * 8);
+  border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+}
+
+.giscus-thread .giscus {
+  width: 100%;
+}
